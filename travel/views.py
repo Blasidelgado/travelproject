@@ -3,4 +3,4 @@ from django.http import HttpResponse
 
 # Create your views here.
 def index(request):
-    return HttpResponse('i am the index route')
+    return render(request, "travel/index.html", status=200)
