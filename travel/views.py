@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.http import JsonResponse
 from django.contrib.auth.forms import UserCreationForm
 from django.views.decorators.csrf import csrf_exempt
-from django.contrib.auth import login
+from django.contrib.auth import authenticate, login, logout
 from .models import UserProfile
 
 # Create your views here.
@@ -37,3 +37,29 @@ def handle_users(request, user_id):
             return JsonResponse({'success': False, 'message': errors}, status=400)
     else:
         return JsonResponse({'success': False, 'message': 'Method not allowed'}, status=400)
+    
+
+def handle_login(request): 
+    if request.method == 'POST': # Attempt to sign user in
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        user = authenticate(request, username=username, password=password)
+
+        if user is not None:
+            login(request, user)
+            return JsonResponse({'success': True, 'userId': user.id, 'username': user.username}, status=201)
+
+        return JsonResponse({'success': False, 'message': 'Incorrect credentials'}, status=401)
+    else:
+        return JsonResponse({'success': False, 'message': 'Method not allowed'}, status=400)
+
+
+def handle_logout(request):
+    logout(request)
+    return JsonResponse({'success': True, 'message': f'User {request.user} logged out'}, status=200)
+
+def handle_session(request):
+    if request.user.is_authenticated:
+        return JsonResponse({'success': True}, status=200)
+    
+    return JsonResponse({'success': False}, status=200)
