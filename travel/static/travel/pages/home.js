@@ -1,8 +1,6 @@
-import checkSessionStatus from "../util/handleSession.js";
-
-export default async function homePage() {
+export default async function homePage(sessionStatus) {
     const homeContainer = document.createElement('div');
-    const content = await checkSessionStatus() ? 'logged in' : 'not logged in';
+    const content = sessionStatus ? 'logged in' : 'not logged in';
 
     homeContainer.innerHTML = `
         <h1>I am the homepage</h1>

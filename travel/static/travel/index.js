@@ -2,6 +2,7 @@ import registerPage from './auth/register.js';
 import loginPage from './auth/login.js';
 import navBar from './navBar/navBar.js';
 import homePage from './pages/home.js';
+import checkSessionStatus from './util/handleSession.js';
 
 
 document.addEventListener('DOMContentLoaded', function () {
@@ -22,24 +23,43 @@ document.addEventListener('DOMContentLoaded', function () {
     })
 });
 
-async function loadPage(page = home) {
+
+export async function loadPage(page = "home") {
     const body = document.querySelector("main");
-    body.innerHTML = null;
+    body.innerHTML = '';
+    const state = { page: page };
+    history.pushState(state, "", `/${page}`);
+    const sessionStatus = await checkSessionStatus();
+
     switch(page) {
         case "home":
-            body.appendChild(await homePage());
+            body.appendChild(await homePage(sessionStatus));
             break;
         case "login":
-            body.appendChild(loginPage());
-            break;
+            if (!sessionStatus) {
+                body.appendChild(await loginPage());
+                break;
+            } else {
+                body.appendChild(await homePage(sessionStatus));
+                break;
+            }
         case "register":
             body.appendChild(registerPage());
             break;
         case "logout":
             await logout();
-            body.appendChild(await homePage());
+            body.appendChild(await homePage(false));
+            break;
     }
 }
+
+
+window.addEventListener("popstate", (event) => {
+    const state = event.state;
+    if (state) {
+        loadPage(state.page);
+    }
+});
 
 async function logout() {
     await fetch('api/logout');

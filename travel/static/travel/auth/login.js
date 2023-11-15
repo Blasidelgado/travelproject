@@ -1,6 +1,9 @@
 import getCSRFCookie from "../util/csrfHandler.js";
+import { loadPage } from "../index.js";
+import checkSessionStatus from "../util/handleSession.js";
 
-export default function loginPage() {
+export default async function loginPage() {
+
     const formContainer = document.createElement('div');
     const registrationForm = document.createElement('form');
 
@@ -33,7 +36,7 @@ export default function loginPage() {
             if (data.success) {
                 const {userId, username} = data;
                 console.log(`User id: ${userId} username: ${username} logged in succesfully`);
-                
+                await loadPage('home');
             } else {
                 // Handle error
                 console.error('Error de registro:', data.message);
