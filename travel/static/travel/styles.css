@@ -4,6 +4,28 @@
     margin: 0;
 }
 
-body {
+main {
     padding: 1rem;
 }
+
+nav {
+    position: relative;
+}
+
+#navbarNav {
+    position: absolute;
+    right: 0;
+    top: 80%;
+    background-color: aquamarine;
+    border-radius: 10px;
+}
+
+#navbarNav li {
+    padding: 0.8rem 1.6rem;
+    text-align: center;
+}
+
+#navbarNav li:not(#navbarNav li:first-child) {
+    border-top: 1px solid grey;
+}
+

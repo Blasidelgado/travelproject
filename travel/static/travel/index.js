@@ -1,9 +1,14 @@
-import registerPage from './auth/register.js';
-import loginPage from './auth/login.js';
-import navBar from './navBar/navBar.js';
-import homePage from './pages/home.js';
-import checkSessionStatus from './util/handleSession.js';
+import checkSessionStatus from "./util/handleSession.js";
+import homePage from "./pages/home.js";
+import loginPage from "./auth/login.js";
+import registerPage from "./auth/register.js";
+import navBar from "./navBar/navBar.js";
+import travelPage from "./pages/travel.js";
+import profilePage from "./pages/profile.js";
 
+const appState = {
+    sessionStatus: false,
+};
 
 document.addEventListener('DOMContentLoaded', function () {
     const root = document.getElementById('root');
@@ -14,33 +19,44 @@ document.addEventListener('DOMContentLoaded', function () {
     root.appendChild(header);
     root.appendChild(main);
     root.appendChild(footer);
-    header.appendChild(navBar());
 
-    document.querySelectorAll(".nav-btn").forEach(btn => {
-        btn.addEventListener("click", () => {
-            loadPage(btn.dataset.page);
-        })
-    })
+    loadPage();
 });
 
 
 export async function loadPage(page = "home") {
+    const header = document.querySelector("header");
     const body = document.querySelector("main");
+    header.innerHTML = '';
     body.innerHTML = '';
     const state = { page: page };
     history.pushState(state, "", `/${page}`);
-    const sessionStatus = await checkSessionStatus();
+    await updateSessionStatus();
+    header.appendChild(navBar(appState.sessionStatus));
+
+    document.querySelectorAll(".page-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+            loadPage(btn.dataset.page);
+        })
+    });
 
     switch(page) {
         case "home":
-            body.appendChild(await homePage(sessionStatus));
+            console.log('home loaded');
+            body.appendChild(await homePage(appState.sessionStatus));
+            break;
+        case "travel":
+            body.appendChild(await travelPage(appState.sessionStatus));
+            break;
+        case "profile":
+            body.appendChild(await profilePage(appState.sessionStatus));
             break;
         case "login":
-            if (!sessionStatus) {
+            if (!appState.sessionStatus) {
                 body.appendChild(await loginPage());
                 break;
             } else {
-                body.appendChild(await homePage(sessionStatus));
+                body.appendChild(await homePage(appState.sessionStatus));
                 break;
             }
         case "register":
@@ -48,11 +64,9 @@ export async function loadPage(page = "home") {
             break;
         case "logout":
             await logout();
-            body.appendChild(await homePage(false));
             break;
     }
 }
-
 
 window.addEventListener("popstate", (event) => {
     const state = event.state;
@@ -61,6 +75,12 @@ window.addEventListener("popstate", (event) => {
     }
 });
 
+async function updateSessionStatus() {
+    appState.sessionStatus = await checkSessionStatus();
+}
+
 async function logout() {
-    await fetch('api/logout');
+    const response = await fetch('api/logout');
+    const data = await response.json()
+    if (data.success) await loadPage('home');
 }
