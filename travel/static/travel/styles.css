@@ -13,19 +13,24 @@ nav {
 }
 
 #navbarNav {
-    position: absolute;
-    right: 0;
-    top: 80%;
-    background-color: aquamarine;
-    border-radius: 10px;
+    flex-basis: 100%;
 }
 
-#navbarNav li {
-    padding: 0.8rem 1.6rem;
-    text-align: center;
-}
+@media screen and (max-width: 991px) {
+    #navbarNav {
+        position: absolute;
+        right: 0;
+        top: 80%;
+        background-color: aquamarine;
+        border-radius: 10px;
+    }
 
-#navbarNav li:not(#navbarNav li:first-child) {
-    border-top: 1px solid grey;
+    #navbarNav li {
+        padding: 0.8rem 1.6rem;
+        text-align: center;
+    }
+    
+    #navbarNav li:not(#navbarNav li:first-child) {
+        border-top: 1px solid grey;
+    }
 }
-
