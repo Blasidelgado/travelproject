@@ -8,7 +8,7 @@ export default function registerPage() {
     registrationForm.innerHTML = `
         <div class="container py-5 h-100">
             <div class="row d-flex justify-content-center align-items-center h-100">
-                <div class="col-12 col-md-9 col-xl-6">
+                <div class="col-12 col-md-9 col-xl-8">
                     <div class="card auth-bg text-white">
                         <div class="card-body p-5 text-center">
                             <fieldset class="mb-md-5 mt-md-4 pb-5">
@@ -26,29 +26,27 @@ export default function registerPage() {
                                     <input type="text" id="last-name" class="form-control form-control-lg" name="lastName" />
                                     <label class="form-label" for="last-name">Last Name</label>
                                 </div>
-                            <div class="form-outline form-white mb-4">
-                                <input type="password" id="password" class="form-control form-control-lg" name="password1" />
-                                <label class="form-label" for="password">Password</label>
-                            </div>
-                            <div class="form-outline form-white mb-4">
-                                <input type="password" id="confirm-password" class="form-control form-control-lg" name="password2" />
-                                <label class="form-label" for="confirm-password">Confirm Password</label>
-                            </div>
-                            <div id="validationLoginForm" aria-describedby="validationServerUsernameFeedback" class="invalid-feedback">
-                                Something went wrong. Please try again.
-                            </div>        
-                            <button class="btn btn-outline-light btn-lg px-5" type="submit">Register</button>  
+                                <div class="form-outline form-white mb-4">
+                                    <input type="password" id="password" class="form-control form-control-lg" name="password1" />
+                                    <label class="form-label" for="password">Password</label>
+                                </div>
+                                <div class="form-outline form-white mb-4">
+                                    <input type="password" id="confirm-password" class="form-control form-control-lg" name="password2" />
+                                    <label class="form-label" for="confirm-password">Confirm Password</label>
+                                </div>
+                                <div id="validationLoginForm" aria-describedby="validationServerUsernameFeedback" class="invalid-feedback">
+                                    Something went wrong. Please try again.
+                                </div>        
+                                <button class="btn btn-outline-light btn-lg px-5" type="submit">Register</button>  
                             </fieldset>
-                        <div>
-                        <p class="mb-0">
-                            Already have an account? 
-                            <a id="signin-btn" class="text-white-50 fw-bold">Sign in</a>
-                        </p>
+                            <p class="mb-0">
+                                Already have an account? 
+                                <a id="signin-btn" class="text-white-50 fw-bold">Sign in</a>
+                            </p>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-        </div>
         </div>`;
 
     formContainer.appendChild(registrationForm);
