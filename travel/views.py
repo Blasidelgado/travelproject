@@ -10,20 +10,25 @@ def index(request):
     return render(request, "travel/index.html", status=200)
 
 
-def handle_users(request, user_id):
+def handle_users(request, user_id=None):
     if request.method == 'POST':  # Create a new user
         username = request.POST.get('username')
+        first_name = request.POST.get('firstName')
+        last_name = request.POST.get('lastName')
         password = request.POST.get('password1')
         confirm_password = request.POST.get('password2')
 
         if password != confirm_password:
-            return JsonResponse({'success': False, 'message': 'passwords does not match'}, status=400)
+            return JsonResponse({'success': False, 'message': 'passwords do not match'}, status=400)
 
         # TODO more checks here
 
         form = UserCreationForm({'username': username, 'password1': password, 'password2': password})
         if form.is_valid():
-            user = form.save()
+            user = form.save(commit=False)
+            user.first_name = first_name
+            user.last_name = last_name
+            user.save()
 
             # Create a new UserProfile
             userProfile = UserProfile.objects.create(user=user)
@@ -37,7 +42,7 @@ def handle_users(request, user_id):
             return JsonResponse({'success': False, 'message': errors}, status=400)
     else:
         return JsonResponse({'success': False, 'message': 'Method not allowed'}, status=400)
-    
+
 
 def handle_login(request): 
     if request.method == 'POST': # Attempt to sign user in
@@ -57,7 +62,6 @@ def handle_login(request):
 def handle_logout(request):
     logout(request)
     return JsonResponse({'success': True, 'message': f'User {request.user} logged out'}, status=200)
-
 
 
 def handle_session(request):

@@ -1,28 +1,54 @@
 import getCSRFCookie from "../util/csrfHandler.js";
 
 export default function registerPage() {
-    const formContainer = document.createElement('div');
+    const formContainer = document.createElement('section');
     const registrationForm = document.createElement('form');
 
     registrationForm.innerHTML = `
-        <h1>Register</h1>
-        <div class="mb-3 input-container">
-            <label for="username" class="form-label">Username</label>
-            <input type="text" class="form-control" id="username" name="username">
+        <div class="container py-5 h-100">
+            <div class="row d-flex justify-content-center align-items-center h-100">
+                <div class="col-12 col-md-9 col-xl-6">
+                    <div class="card auth-bg text-white">
+                        <div class="card-body p-5 text-center">
+                            <fieldset class="mb-md-5 mt-md-4 pb-5">
+                                <h2 class="fw-bold mb-2 text-uppercase">Register</h2>
+                                <legend class="text-white-50 mb-5">Please enter your information below!</legend>
+                                <div class="form-outline form-white mb-4">
+                                    <input type="text" id="username" class="form-control form-control-lg" name="username" />
+                                    <label class="form-label" for="username">Username</label>
+                                </div>
+                                <div class="form-outline form-white mb-4">
+                                    <input type="text" id="first-name" class="form-control form-control-lg" name="firstName" />
+                                    <label class="form-label" for="first-name">First Name</label>
+                                </div>
+                                <div class="form-outline form-white mb-4">
+                                    <input type="text" id="last-name" class="form-control form-control-lg" name="lastName" />
+                                    <label class="form-label" for="last-name">Last Name</label>
+                                </div>
+                            <div class="form-outline form-white mb-4">
+                                <input type="password" id="password" class="form-control form-control-lg" name="password1" />
+                                <label class="form-label" for="password">Password</label>
+                            </div>
+                            <div class="form-outline form-white mb-4">
+                                <input type="password" id="confirm-password" class="form-control form-control-lg" name="password2" />
+                                <label class="form-label" for="confirm-password">Confirm</label>
+                            </div>
+                            <div id="validationLoginForm" aria-describedby="validationServerUsernameFeedback" class="invalid-feedback">
+                                Something went wrong. Please try again.
+                            </div>        
+                            <button class="btn btn-outline-light btn-lg px-5" type="submit">Register</button>  
+                            </fieldset>
+                        <div>
+                        <p class="mb-0">
+                            Already have an account? 
+                            <a id="signin-btn" class="text-white-50 fw-bold">Sign in</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="mb-3 input-container">
-            <label for="password" class="form-label">Password</label>
-            <input type="password" class="form-control" id="password" name="password1">
         </div>
-        <div class="mb-3 input-container">
-            <label for="confirm-password" class="form-label">Confirm Password</label>
-            <input type="password" class="form-control" id="confirm-password" name="password2">
-        </div>
-        <button type="submit" class="btn btn-primary">Submit</button>
-        <div id="validationLoginForm" aria-describedby="validationServerUsernameFeedback" class="invalid-feedback">
-            Incorrect credentials.
-        </div>        
-        `;
+        </div>`;
 
     formContainer.appendChild(registrationForm);
 
@@ -52,6 +78,9 @@ export default function registerPage() {
             console.error('Error de red:', error);
         }
     });
+
+    // Sign in link should redirect to login page
+    registrationForm.querySelector('#signin-btn').onclick = async () =>  await loadPage('login');
 
     return formContainer;
 };

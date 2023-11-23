@@ -42,6 +42,11 @@ nav {
 
 .card.auth-bg {
     background-color: #788BFF;
+    border-radius: 1rem;
+}
+
+legend {
+    font-size: 1.2rem;
 }
 
 /* Estilos para el formulario de inicio de sesión */
