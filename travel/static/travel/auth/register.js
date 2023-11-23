@@ -31,7 +31,7 @@ export default function registerPage() {
                             </div>
                             <div class="form-outline form-white mb-4">
                                 <input type="password" id="confirm-password" class="form-control form-control-lg" name="password2" />
-                                <label class="form-label" for="confirm-password">Confirm</label>
+                                <label class="form-label" for="confirm-password">Confirm Password</label>
                             </div>
                             <div id="validationLoginForm" aria-describedby="validationServerUsernameFeedback" class="invalid-feedback">
                                 Something went wrong. Please try again.
