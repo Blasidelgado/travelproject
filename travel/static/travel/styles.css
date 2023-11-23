@@ -20,12 +20,22 @@ nav {
     flex-basis: 100%;
 }
 
+#navbarNav li {
+    cursor: pointer;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+}
+
+#navbarNav li:hover {
+    background-color: #788BFF;
+}
+
 @media screen and (max-width: 991px) {
     #navbarNav {
         position: absolute;
         right: 0;
         top: 80%;
-        background-color: aquamarine;
+        background-color: #788BFF;
         border-radius: 10px;
         max-width: 200px;
     }
@@ -33,6 +43,10 @@ nav {
     #navbarNav li {
         padding: 0.8rem 1.6rem;
         text-align: center;
+    }
+
+    #navbarNav li:hover {
+        background-color: #afb1bd;
     }
     
     #navbarNav li:not(#navbarNav li:first-child) {
