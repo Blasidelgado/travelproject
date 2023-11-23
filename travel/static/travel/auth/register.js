@@ -5,15 +5,24 @@ export default function registerPage() {
     const registrationForm = document.createElement('form');
 
     registrationForm.innerHTML = `
-        <h1>Registro de Usuario</h1>
-        <label for="username">Username:</label>
-        <input type="text" id="username" name="username" required>
-        <label for="password1">Password:</label>
-        <input type="password" id="password1" name="password1" required>
-        <label for="password2">Confirm Password:</label>
-        <input type="password" id="password2" name="password2" required>
-        <button type="submit">Registrar</button>
-    `;
+        <h1>Register</h1>
+        <div class="mb-3 input-container">
+            <label for="username" class="form-label">Username</label>
+            <input type="text" class="form-control" id="username" name="username">
+        </div>
+        <div class="mb-3 input-container">
+            <label for="password" class="form-label">Password</label>
+            <input type="password" class="form-control" id="password" name="password1">
+        </div>
+        <div class="mb-3 input-container">
+            <label for="confirm-password" class="form-label">Confirm Password</label>
+            <input type="password" class="form-control" id="confirm-password" name="password2">
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+        <div id="validationLoginForm" aria-describedby="validationServerUsernameFeedback" class="invalid-feedback">
+            Incorrect credentials.
+        </div>        
+        `;
 
     formContainer.appendChild(registrationForm);
 

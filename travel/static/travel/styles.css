@@ -4,6 +4,10 @@
     margin: 0;
 }
 
+a {
+    cursor: pointer;
+}
+
 main {
     padding: 1rem;
 }
@@ -23,6 +27,7 @@ nav {
         top: 80%;
         background-color: aquamarine;
         border-radius: 10px;
+        max-width: 200px;
     }
 
     #navbarNav li {
@@ -32,5 +37,34 @@ nav {
     
     #navbarNav li:not(#navbarNav li:first-child) {
         border-top: 1px solid grey;
+    }
+}
+
+.card.auth-bg {
+    background-color: #788BFF;
+}
+
+/* Estilos para el formulario de inicio de sesión */
+.invalid-feedback {
+    display: none;
+    color: #dc3545;
+    margin-top: 8px;
+}
+
+/* Estilos para la animación de error */
+.is-invalid {
+    border-color: #dc3545;
+    animation: shake 0.3s;
+}
+
+@keyframes shake {
+    0%, 100% {
+        transform: translateX(0);
+    }
+    25%, 75% {
+        transform: translateX(-5px);
+    }
+    50% {
+        transform: translateX(5px);
     }
 }

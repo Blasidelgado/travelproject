@@ -10,7 +10,7 @@ export default function navBar(sessionStatus) {
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
-        <div class="collapse navbar-collapse flex-grow-1" id="navbarNav">
+        <div class="collapse navbar-collapse flex-grow-1 w-75" id="navbarNav">
             <ul class="navbar-nav d-lg-flex justify-content-evenly w-100">
                 <li class="nav-item page-btn" data-page="travel">Travel now</li>
                 <li class="nav-item page-btn" data-page="profile">My profile</li>

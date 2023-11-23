@@ -42,7 +42,6 @@ export async function loadPage(page = "home") {
 
     switch(page) {
         case "home":
-            console.log('home loaded');
             body.appendChild(await homePage(appState.sessionStatus));
             break;
         case "travel":
