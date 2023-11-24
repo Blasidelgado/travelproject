@@ -25,7 +25,7 @@ class UserProfile(models.Model):
                 'plate_number': self.car.plate_number if self.car else None,
                 'brand': self.car.brand if self.car else None,
                 'model': self.car.model if self.car else None,
-            } if self.has_car() else None,
+            },
             'description': self.description
         }
 
