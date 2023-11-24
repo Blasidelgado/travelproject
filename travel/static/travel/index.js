@@ -81,5 +81,8 @@ async function updateSessionStatus() {
 async function logout() {
     const response = await fetch('api/logout');
     const data = await response.json()
-    if (data.success) await loadPage('home');
+    if (data.success) {
+        sessionStorage.removeItem('user')
+        await loadPage('home');
+    } 
 }

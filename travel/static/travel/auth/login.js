@@ -60,8 +60,7 @@ export default async function loginPage() {
             const data = await response.json();
             
             if (data.success) {
-                const {userId, username} = data;
-                console.log(`User id: ${userId} username: ${username} logged in succesfully`);
+                sessionStorage.setItem('user', data.username)
                 await loadPage('home');
             } else {
                 formFields.forEach(input => input.classList.add('is-invalid'));

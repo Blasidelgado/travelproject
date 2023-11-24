@@ -49,7 +49,10 @@ def handle_users(request, username=None):
         else: #Requesting an individual user
             try:
                 user = UserProfile.objects.get(user__username=username).to_json()
-                return JsonResponse({'success': True, 'user': user}, status=200)
+                if request.user.username == username:
+                    return JsonResponse({'success': True, 'user': user, 'isEditable': True}, status=200)
+                else:    
+                    return JsonResponse({'success': True, 'user': user, 'isEditable': False}, status=200)
             except:
                 return JsonResponse({'success': False, 'message': 'User not found'}, status=400)
     else:
