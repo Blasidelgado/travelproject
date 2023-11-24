@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from django.http import JsonResponse
+from django.http import HttpResponse, JsonResponse
 from django.contrib.auth.forms import UserCreationForm
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import authenticate, login, logout
@@ -10,7 +10,7 @@ def index(request):
     return render(request, "travel/index.html", status=200)
 
 
-def handle_users(request, user_id=None):
+def handle_users(request, username=None):
     if request.method == 'POST':  # Create a new user
         username = request.POST.get('username')
         first_name = request.POST.get('firstName')
@@ -40,6 +40,18 @@ def handle_users(request, user_id=None):
         else:
             errors = dict(form.errors.items())
             return JsonResponse({'success': False, 'message': errors}, status=400)
+    elif request.method == 'GET':
+        if username == None: # Requesting all users
+            user_profiles = UserProfile.objects.all()
+            users = [user_profile.to_json() for user_profile in user_profiles]
+
+            return JsonResponse({'success': True, 'users':users}, status=200)
+        else: #Requesting an individual user
+            try:
+                user = UserProfile.objects.get(user__username=username).to_json()
+                return JsonResponse({'success': True, 'user': user}, status=200)
+            except:
+                return JsonResponse({'success': False, 'message': 'User not found'}, status=400)
     else:
         return JsonResponse({'success': False, 'message': 'Method not allowed'}, status=400)
 
