@@ -23,7 +23,7 @@ export default async function profilePage(sessionStatus) {
           <div class="card-header bg-white border-0">
             <div class="row align-items-center">
               <div class="col-8">
-                <h3 class="mb-0">Profile</h3>
+                <h3 class="mb-0">Profile ${sessionStorage.getItem('user')}</h3>
               </div>
             </div>
           </div>
@@ -33,37 +33,6 @@ export default async function profilePage(sessionStatus) {
                 User information
               </h6>
               <div class="pl-lg-4">
-                <div class="row">
-                  <div class="col-lg-6">
-                    <div class="form-group focused">
-                      <label class="form-control-label" for="username"
-                        >Username</label
-                      >
-                      <input
-                        type="text"
-                        id="username"
-                        class="form-control form-control-alternative"
-                        placeholder="my_username"
-                        value=""
-                      />
-                    </div>
-                  </div>
-                  <div class="col-lg-6">
-                    <div class="form-group">
-                      <label class="form-control-label" for="email"
-                        >Email address</label
-                      >
-                      <input
-                        type="email"
-                        id="email"
-                        name="username"
-                        class="form-control form-control-alternative"
-                        placeholder="your_email@example.com"
-                        value=""
-                      />
-                    </div>
-                  </div>
-                </div>
                 <div class="row">
                   <div class="col-lg-6">
                     <div class="form-group focused">
@@ -216,20 +185,57 @@ export default async function profilePage(sessionStatus) {
       // Fetch user data and fill user profile information
       const fetchedData = await fetchData(`/api/users/${sessionStorage.getItem('user')}`);
       if (fetchedData.success) {
-        await updateData(fetchedData.user, fetchedData.isEditable);
+        updateData(fetchedData.user, fetchedData.isEditable);
       } else {
         pageContainer.innerHTML = "<h1>Something went wrong. Please try again.</h1>";
       }
       
       // Set page event listeners
-      editBtn.onclick = async () => {
+      editBtn.onclick = () => {
           setIsEditing();
           updateView();
         };
 
+        // Edit profile event handler
+        pageContainer.querySelector('form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            // JSON object to send
+            const form = e.target;
+            const userData = {};
+            // Loop through form elements
+            for (const element of form.elements) {
+              // Check if the element has a name and is not a button
+              if (element.name && element.type !== 'submit') {
+                  // Add element name and value to the formData object
+                  userData[element.name] = element.value;
+              }
+            }      
+            // Make the request and parse response      
+            try {
+                const response = await fetch('api/users', {
+                    method: 'PUT',
+                    headers: {
+                      'Content-Type': 'application/json',
+                      'X-CSRFToken': getCSRFCookie('csrftoken'),
+                    },
+                    body: JSON.stringify(userData),
+                })
+                const data = await response.json();
+                console.log(data);
+                
+                if (data.success) {
+                    setIsEditing();
+                    updateData(data.user, data.isEditable) // confirm
+                }
+            } catch (error) {
+                console.error('An error has ocurred:', error);
+        }
+    })
+
     return pageContainer;
 
-    async function updateData(userData, editable) {
+
+    function updateData(userData, editable) {
       for (const [key, value] of Object.entries(userData)) {
           if (key === 'car') {
               for (const [carKey, carValue] of Object.entries(value)) {
