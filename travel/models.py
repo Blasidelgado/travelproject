@@ -31,6 +31,6 @@ class UserProfile(models.Model):
 
 
 class Car(models.Model):
-    plate_number = models.CharField(null=False, max_length=40)
-    brand = models.CharField(null=False, max_length=30)
-    model = models.CharField(null=False, max_length=30)
+    plate_number = models.CharField(default='', max_length=40)
+    brand = models.CharField(default='', max_length=30)
+    model = models.CharField(default='', max_length=30)

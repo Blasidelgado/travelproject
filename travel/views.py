@@ -3,7 +3,8 @@ from django.http import HttpResponse, JsonResponse
 from django.contrib.auth.forms import UserCreationForm
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import authenticate, login, logout
-from .models import UserProfile
+from .models import UserProfile, Car
+import json
 
 # Create your views here.
 def index(request):
@@ -55,6 +56,31 @@ def handle_users(request, username=None):
                     return JsonResponse({'success': True, 'user': user, 'isEditable': False}, status=200)
             except:
                 return JsonResponse({'success': False, 'message': 'User not found'}, status=400)
+    elif request.method == 'PUT':
+        data = json.loads(request.body.decode('utf-8'))
+        first_name, last_name = data.get('first_name'), data.get('last_name')
+        if not first_name or not last_name:
+            return JsonResponse({'success': False, 'message': 'Names cannot be empty'}, status=400)
+        try:
+            userProfile = UserProfile.objects.get(user__username=request.user.username)
+            for key, value in data.items():
+                if key in ['first_name', 'last_name', 'email']:
+                    setattr(userProfile.user, key, value)
+                elif key in ['plate_number', 'brand', 'model']:
+                    if userProfile.car is None: # Create car if new
+                        userProfile.car = Car.objects.create()
+                    setattr(userProfile.car, key, value)
+                else:
+                    setattr(userProfile, key, value)
+
+            userProfile.user.save()
+            userProfile.car.save()
+            userProfile.save()
+
+            return JsonResponse({'success': True, 'user': userProfile.to_json(), 'isEditable': True}, status=201)
+        except Exception as e:
+            return JsonResponse({'success': False, 'message': 'Unauthorized'}, status=403)
+
     else:
         return JsonResponse({'success': False, 'message': 'Method not allowed'}, status=400)
 
