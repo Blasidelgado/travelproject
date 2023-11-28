@@ -67,8 +67,8 @@ export default function registerPage() {
             const data = await response.json();
 
             if (data.success) {
-                const {userId, username} = data;
-                console.log(`User id: ${userId} username: ${username} created succesfully`)
+                sessionStorage.setItem('user', data.username);
+                await loadPage('home');
             } else {
                 // Manejar errores, puedes mostrar mensajes de error
                 console.error('Error de registro:', data.message);
