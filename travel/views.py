@@ -110,3 +110,17 @@ def handle_session(request):
         return JsonResponse({'success': True}, status=200)
     
     return JsonResponse({'success': False}, status=200)
+
+
+def handle_permissions(request):
+    if request.method == 'GET':
+        try:
+            user = UserProfile.objects.get(user=request.user)
+            print(user.has_license(), user.has_car())
+            permissions = {
+                'hasLicense': user.has_license(),
+                'hasCar': user.has_car()
+                }
+            
+            return JsonResponse({'success': True, 'permissions': permissions}, status=200)
+        except: JsonResponse({'success': False, 'message': 'user not found'}, status=404)

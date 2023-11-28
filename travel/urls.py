@@ -7,5 +7,6 @@ urlpatterns = [
     path('api/users/<str:username>/', views.handle_users, name="user"),
     path('api/login', views.handle_login, name="login"),
     path('api/logout', views.handle_logout, name="logout"),
-    path('api/session', views.handle_session, name="session")
+    path('api/session', views.handle_session, name="session"),
+    path('api/permissions', views.handle_permissions, name="permissions"),
 ]
