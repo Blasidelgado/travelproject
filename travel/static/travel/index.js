@@ -20,11 +20,11 @@ document.addEventListener('DOMContentLoaded', function () {
     root.appendChild(main);
     root.appendChild(footer);
 
-    loadPage();
+    loadPage('home');
 });
 
 
-export async function loadPage(page = "home") {
+export async function loadPage(page, payload) {
     const header = document.querySelector("header");
     const body = document.querySelector("main");
     header.innerHTML = '';
@@ -34,12 +34,6 @@ export async function loadPage(page = "home") {
     await updateSessionStatus();
     header.appendChild(navBar(appState.sessionStatus));
 
-    document.querySelectorAll(".page-btn").forEach(btn => {
-        btn.addEventListener("click", () => {
-            loadPage(btn.dataset.page);
-        })
-    });
-
     switch(page) {
         case "home":
             body.appendChild(await homePage(appState.sessionStatus));
@@ -48,7 +42,7 @@ export async function loadPage(page = "home") {
             body.appendChild(await travelPage(appState.sessionStatus));
             break;
         case "profile":
-            body.appendChild(await profilePage(appState.sessionStatus));
+            body.appendChild(await profilePage(appState.sessionStatus, payload));
             break;
         case "login":
             if (!appState.sessionStatus) {

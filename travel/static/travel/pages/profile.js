@@ -2,7 +2,7 @@ import getCSRFCookie from "../util/csrfHandler.js";
 import { loadPage } from "../index.js";
 import fetchData from "../util/fetchData.js";
 
-export default async function profilePage(sessionStatus) {
+export default async function profilePage(sessionStatus, user) {
   if (!sessionStatus) {
     loadPage("login");
   }
@@ -23,7 +23,7 @@ export default async function profilePage(sessionStatus) {
           <div class="card-header bg-white border-0">
             <div class="row align-items-center">
               <div class="col-8">
-                <h3 class="mb-0">Profile ${sessionStorage.getItem("user")}</h3>
+                <h3 class="mb-0">Profile ${user}</h3>
               </div>
             </div>
           </div>
@@ -182,7 +182,7 @@ export default async function profilePage(sessionStatus) {
   const textarea = pageContainer.querySelector("textarea");
 
   // Fetch user data and fill user profile information
-  fetchandUpdate();
+  fetchandUpdate(user);
 
   // Set page event listeners
   editBtn.onclick = () => {
@@ -220,7 +220,7 @@ export default async function profilePage(sessionStatus) {
       if (data.success) {
         updateData(data.user, data.isEditable);
       } else {
-        fetchandUpdate();
+        fetchandUpdate(user);
         }
     } catch (error) {
       console.error("An error has ocurred:", error);
@@ -230,8 +230,8 @@ export default async function profilePage(sessionStatus) {
   return pageContainer;
 
 
-  async function fetchandUpdate() {
-    const fetchedData = await fetchData(`/api/users/${sessionStorage.getItem('user')}`);
+  async function fetchandUpdate(username) {
+    const fetchedData = await fetchData(`/api/users/${username}`);
     if (fetchedData.success) {
       updateData(fetchedData.user, fetchedData.isEditable);
     } else {

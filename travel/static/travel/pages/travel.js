@@ -80,11 +80,13 @@ function createModal(target) {
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary">Understood</button>
+                    <button id="load-profile" type="button" class="btn btn-primary">Go to profile</button>
                 </div>
             </div>
         </div>
     `
+
+    modal.querySelector('#load-profile').onclick = () => loadPage('profile')
 
     return modal;
 }

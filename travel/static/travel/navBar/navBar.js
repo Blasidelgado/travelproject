@@ -1,3 +1,5 @@
+import { loadPage } from "../index.js";
+
 export default function navBar(sessionStatus) {
     const navBar = document.createElement('nav');
     navBar.classList = 'navbar navbar-expand-lg bg-body-tertiary p-3';
@@ -34,6 +36,12 @@ export default function navBar(sessionStatus) {
             </ul>
         </div>
     </div>`;
+
+    navBar.querySelectorAll(".page-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+            loadPage(btn.dataset.page, sessionStorage.getItem('user'));
+        })
+    });
 
     return navBar;
 }
