@@ -9,10 +9,10 @@ class UserProfile(models.Model):
     description = models.TextField(max_length=200, blank=True, null=True)
 
     def has_license(self):
-        return self.license is not None
+        return self.license is not None and self.license != ''
     
     def has_car(self):
-        return self.car is not None and self.car.plate_number is not None and self.car.brand is not None and self.car.model is not None
+        return self.car is not None and self.car.plate_number != '' and self.car.brand != '' and self.car.model != ''
 
     def to_json(self):
         return {
@@ -31,6 +31,6 @@ class UserProfile(models.Model):
 
 
 class Car(models.Model):
-    plate_number = models.CharField(blank=True, null=True, max_length=40)
-    brand = models.CharField(blank=True, null=True, max_length=30)
-    model = models.CharField(blank=True, null=True, max_length=30)
+    plate_number = models.CharField(default='', max_length=40)
+    brand = models.CharField(default='', max_length=30)
+    model = models.CharField(default='', max_length=30)

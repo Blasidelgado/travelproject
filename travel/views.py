@@ -63,11 +63,11 @@ def handle_users(request, username=None):
             return JsonResponse({'success': False, 'message': 'Names cannot be empty'}, status=400)
         try:
             userProfile = UserProfile.objects.get(user__username=request.user.username)
-            for key, value in data.items():
+            for key, value in data.items(): # Update table depending on provided key
                 if key in ['first_name', 'last_name', 'email']:
                     setattr(userProfile.user, key, value)
                 elif key in ['plate_number', 'brand', 'model']:
-                    if userProfile.car is None: # Create car if new
+                    if userProfile.car is None:
                         userProfile.car = Car.objects.create()
                     setattr(userProfile.car, key, value)
                 else:
@@ -116,7 +116,6 @@ def handle_permissions(request):
     if request.method == 'GET':
         try:
             user = UserProfile.objects.get(user=request.user)
-            print(user.has_license(), user.has_car())
             permissions = {
                 'hasLicense': user.has_license(),
                 'hasCar': user.has_car()

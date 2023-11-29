@@ -87,3 +87,44 @@ legend {
         transform: translateX(5px);
     }
 }
+
+/* Travel page */
+
+.page-container {
+    height: 100vh;
+    position: relative;
+}
+
+.travel-cto {
+    position: absolute;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 65%;
+    top: 30%;
+    left: 50%;
+    -ms-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+    height: 30%;
+    padding: 1rem;
+}
+
+.travel-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+    padding: 2rem;
+    height: 75%;
+    width: 45%;
+    border-radius: 10px;
+    text-align: center;
+}
+
+.passenger {
+    background-color: #dc3545;
+}
+
+.driver {
+    background-color: #afb1bd;
+}

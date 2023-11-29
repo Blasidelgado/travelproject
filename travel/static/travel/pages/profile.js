@@ -2,20 +2,20 @@ import getCSRFCookie from "../util/csrfHandler.js";
 import { loadPage } from "../index.js";
 import fetchData from "../util/fetchData.js";
 
-
 export default async function profilePage(sessionStatus) {
-    if (!sessionStatus) {
-        loadPage("login");
-    }
-    
+  if (!sessionStatus) {
+    loadPage("login");
+  }
+
+  // State variables
   let isEditing = false;
   let isEditable = false;
 
+  // Root element from page
   const pageContainer = document.createElement("section");
 
   pageContainer.innerHTML = `
   <section class="main-content">
-  <!-- Page content -->
   <div class="container-fluid mt--7">
     <div class="row">
       <div class="col-xl-8 order-xl-1">
@@ -23,7 +23,7 @@ export default async function profilePage(sessionStatus) {
           <div class="card-header bg-white border-0">
             <div class="row align-items-center">
               <div class="col-8">
-                <h3 class="mb-0">Profile ${sessionStorage.getItem('user')}</h3>
+                <h3 class="mb-0">Profile ${sessionStorage.getItem("user")}</h3>
               </div>
             </div>
           </div>
@@ -106,7 +106,7 @@ export default async function profilePage(sessionStatus) {
                         id="brand"
                         class="form-control form-control-alternative"
                         name="brand"
-                        placeholder="Car brand"
+                        placeholder="Brand"
                         value=""
                       />
                     </div>
@@ -121,7 +121,7 @@ export default async function profilePage(sessionStatus) {
                         id="model"
                         class="form-control form-control-alternative"
                         name="model"
-                        placeholder="Country"
+                        placeholder="Model"
                         value=""
                       />
                     </div>
@@ -175,97 +175,101 @@ export default async function profilePage(sessionStatus) {
       </section>
       `;
 
-      
-      // Toggle status
-      const editBtn = pageContainer.querySelector('#edit-profile');
-      const submitBtn = pageContainer.querySelector('#submit-profile');
-      const inputs = pageContainer.querySelectorAll('input');
-      const textarea = pageContainer.querySelector('textarea');
-      
-      // Fetch user data and fill user profile information
-      const fetchedData = await fetchData(`/api/users/${sessionStorage.getItem('user')}`);
-      if (fetchedData.success) {
-        updateData(fetchedData.user, fetchedData.isEditable);
+  // Toggle status
+  const editBtn = pageContainer.querySelector("#edit-profile");
+  const submitBtn = pageContainer.querySelector("#submit-profile");
+  const inputs = pageContainer.querySelectorAll("input");
+  const textarea = pageContainer.querySelector("textarea");
+
+  // Fetch user data and fill user profile information
+  fetchandUpdate();
+
+  // Set page event listeners
+  editBtn.onclick = () => {
+    setIsEditing();
+    updateView();
+  };
+
+  // Edit profile event handler
+  pageContainer.querySelector("form").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    // JSON object to send
+    const form = e.target;
+    const userData = {};
+    // Loop through form elements
+    for (const element of form.elements) {
+      // Check if the element has a name and is not a button
+      if (element.name && element.type !== "submit") {
+        // Add element name and value to the formData object
+        userData[element.name] = element.value;
+      }
+    }
+    // Make the request and parse response
+    try {
+      const response = await fetch("api/users", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRFToken": getCSRFCookie("csrftoken"),
+        },
+        body: JSON.stringify(userData),
+      });
+      const data = await response.json();
+
+      setIsEditing();
+      if (data.success) {
+        updateData(data.user, data.isEditable);
       } else {
-        pageContainer.innerHTML = "<h1>Something went wrong. Please try again.</h1>";
-      }
-      
-      // Set page event listeners
-      editBtn.onclick = () => {
-          setIsEditing();
-          updateView();
-        };
-
-        // Edit profile event handler
-        pageContainer.querySelector('form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            // JSON object to send
-            const form = e.target;
-            const userData = {};
-            // Loop through form elements
-            for (const element of form.elements) {
-              // Check if the element has a name and is not a button
-              if (element.name && element.type !== 'submit') {
-                  // Add element name and value to the formData object
-                  userData[element.name] = element.value;
-              }
-            }      
-            // Make the request and parse response      
-            try {
-                const response = await fetch('api/users', {
-                    method: 'PUT',
-                    headers: {
-                      'Content-Type': 'application/json',
-                      'X-CSRFToken': getCSRFCookie('csrftoken'),
-                    },
-                    body: JSON.stringify(userData),
-                })
-                const data = await response.json();
-                console.log(data);
-                
-                if (data.success) {
-                    setIsEditing();
-                    updateData(data.user, data.isEditable) // confirm
-                }
-            } catch (error) {
-                console.error('An error has ocurred:', error);
+        fetchandUpdate();
         }
-    })
-
-    return pageContainer;
-
-
-    function updateData(userData, editable) {
-      for (const [key, value] of Object.entries(userData)) {
-          if (key === 'car') {
-              for (const [carKey, carValue] of Object.entries(value)) {
-                  const target = pageContainer.querySelector(`#${carKey}`);
-                  if (target) {
-                      target.value = carValue ? carValue : "Unknown";
-                  }
-              }
-          }
-          const target = pageContainer.querySelector(`#${key}`);
-          if (target) {
-              target.value = value ? value : "Unknown";
-          }
-      }
-      isEditable = editable;
-      updateView();
+    } catch (error) {
+      console.error("An error has ocurred:", error);
     }
+  });
 
-    function setIsEditing() {
-        isEditing = !isEditing;
-    }
-  
-    function updateView() {
-        inputs.forEach(input => input.disabled = !isEditing);
-        textarea.disabled = !isEditing;
-        if (isEditable) {
-          editBtn.style.display = isEditing ? 'none' : 'block';
-          submitBtn.style.display = isEditing ? 'block' : 'none';
-        } else {
-          pageContainer.querySelector('#control-btns').style.display = 'none';
-        }
+  return pageContainer;
+
+
+  async function fetchandUpdate() {
+    const fetchedData = await fetchData(`/api/users/${sessionStorage.getItem('user')}`);
+    if (fetchedData.success) {
+      updateData(fetchedData.user, fetchedData.isEditable);
+    } else {
+      pageContainer.innerHTML = "<h1>Something went wrong. Please try again.</h1>";
     }
   }
+
+  function updateData(userData, editable) {
+    for (const [key, value] of Object.entries(userData)) {
+      if (key === "car") {
+        for (const [carKey, carValue] of Object.entries(value)) {
+          const target = pageContainer.querySelector(`#${carKey}`);
+          if (target) {
+            target.value = carValue ? carValue : null;
+          }
+        }
+      }
+      const target = pageContainer.querySelector(`#${key}`);
+      if (target) {
+        target.value = value ? value : null;
+      }
+    }
+    isEditable = editable;
+    updateView();
+  }
+
+  function setIsEditing() {
+    isEditing = !isEditing;
+  }
+
+  function updateView() {
+    inputs.forEach((input) => (input.disabled = !isEditing));
+    textarea.disabled = !isEditing;
+    if (isEditable) {
+      editBtn.style.display = isEditing ? "none" : "block";
+      submitBtn.style.display = isEditing ? "block" : "none";
+    } else {
+      pageContainer.querySelector("#control-btns").style.display = "none";
+    }
+  }
+}
