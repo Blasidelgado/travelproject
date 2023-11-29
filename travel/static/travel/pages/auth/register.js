@@ -1,5 +1,5 @@
-import getCSRFCookie from "../util/csrfHandler.js";
-import {loadPage} from "../index.js";
+import getCSRFCookie from "../../util/csrfHandler.js";
+import { loadPage } from "../../index.js";
 
 export default function registerPage() {
     const formContainer = document.createElement('section');

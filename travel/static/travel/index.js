@@ -1,8 +1,8 @@
 import checkSessionStatus from "./util/handleSession.js";
 import homePage from "./pages/home.js";
-import loginPage from "./auth/login.js";
-import registerPage from "./auth/register.js";
-import navBar from "./navBar/navBar.js";
+import loginPage from "./pages/auth/login.js";
+import registerPage from "./pages/auth/register.js";
+import navBar from "./components/navBar.js";
 import travelPage from "./pages/travel.js";
 import profilePage from "./pages/profile.js";
 
