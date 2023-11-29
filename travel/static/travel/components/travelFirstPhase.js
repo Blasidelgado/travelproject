@@ -40,9 +40,11 @@ export default function travelFirstPhase(root) {
   };
 }
 
+let myModal;
+
 function generateModal(target) {
   // Modal to show in case user
-  const myModal = new bootstrap.Modal(createModal(target), {
+  myModal = new bootstrap.Modal(createModal(target), {
     // Your options go here
     backdrop: "static",
     keyboard: true,
@@ -77,7 +79,10 @@ function createModal(target) {
     </div>
 `;
 
-  modal.querySelector("#load-profile").onclick = () => loadPage("profile");
+  modal.querySelector("#load-profile").onclick = () => {
+    myModal.hide();
+    loadPage("profile", sessionStorage.getItem('user'));
+  }
 
   return modal;
 }
