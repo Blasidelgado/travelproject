@@ -31,6 +31,7 @@ export async function loadPage(page, payload) {
     const footer = document.querySelector("footer");
     header.innerHTML = '';
     body.innerHTML = '';
+    footer.innerHTML = '';
     const state = { page: page };
     history.pushState(state, "", `/${page}`);
     await updateSessionStatus();
