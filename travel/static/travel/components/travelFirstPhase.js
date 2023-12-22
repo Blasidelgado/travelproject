@@ -1,5 +1,8 @@
-import { loadPage } from "../index.js";
+import { appState, loadPage } from "../index.js";
+import newTravel from "../pages/newTravel.js";
+import travelPage from "../pages/travel.js";
 import fetchData from "../util/fetchData.js";
+import travelerPhase from "./travelerPhase.js";
 
 export default function travelFirstPhase(root) {
   root.innerHTML = `
@@ -21,7 +24,7 @@ export default function travelFirstPhase(root) {
     const response = await fetchData("api/permissions");
     const { hasLicense } = response.permissions;
     if (hasLicense) {
-      console.log("proceed to take date, cities and choose");
+      return travelerPhase(root);
     } else {
       generateModal("no-license");
     }
@@ -35,7 +38,7 @@ export default function travelFirstPhase(root) {
     } else if (!hasCar) {
       generateModal("no-car");
     } else {
-      console.log("proceed to take date, cities and choose");
+      newTravel(root);
     }
   };
 }

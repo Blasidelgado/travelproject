@@ -3,7 +3,7 @@ from django.http import HttpResponse, JsonResponse
 from django.contrib.auth.forms import UserCreationForm
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import authenticate, login, logout
-from .models import UserProfile, Car
+from .models import City, UserProfile, Car
 import json
 
 # Create your views here.
@@ -122,4 +122,13 @@ def handle_permissions(request):
                 }
             
             return JsonResponse({'success': True, 'permissions': permissions}, status=200)
-        except: JsonResponse({'success': False, 'message': 'user not found'}, status=404)
+        except: 
+            return JsonResponse({'success': False, 'message': 'user not found'}, status=404)
+
+def handle_cities(request):
+    try:
+        cities = City.objects.all()
+        serialized_cities = [city.city_name for city in cities]
+        return JsonResponse({'success': True, 'cities': serialized_cities}, status=200)
+    except Exception as e:
+        return JsonResponse({'success': False, 'message': f'Error: {str(e)}'}, status=500)

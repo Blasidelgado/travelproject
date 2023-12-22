@@ -5,8 +5,9 @@ import registerPage from "./pages/auth/register.js";
 import navBar from "./components/navBar.js";
 import travelPage from "./pages/travel.js";
 import profilePage from "./pages/profile.js";
+import footerComponent from "./components/footer.js";
 
-const appState = {
+export const appState = {
     sessionStatus: false,
 };
 
@@ -27,12 +28,14 @@ document.addEventListener('DOMContentLoaded', function () {
 export async function loadPage(page, payload) {
     const header = document.querySelector("header");
     const body = document.querySelector("main");
+    const footer = document.querySelector("footer");
     header.innerHTML = '';
     body.innerHTML = '';
     const state = { page: page };
     history.pushState(state, "", `/${page}`);
     await updateSessionStatus();
     header.appendChild(navBar(appState.sessionStatus));
+    footer.appendChild(footerComponent());
 
     switch(page) {
         case "home":

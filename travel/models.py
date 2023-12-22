@@ -34,3 +34,7 @@ class Car(models.Model):
     plate_number = models.CharField(default='', max_length=40)
     brand = models.CharField(default='', max_length=30)
     model = models.CharField(default='', max_length=30)
+
+
+class City(models.Model):
+    city_name = models.CharField(blank=False, null=False, max_length=40)
