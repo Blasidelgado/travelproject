@@ -10,4 +10,5 @@ urlpatterns = [
     path('api/session', views.handle_session, name="session"),
     path('api/permissions', views.handle_permissions, name="permissions"),
     path('api/cities', views.handle_cities, name="permissions"),
+    path('api/travel', views.handle_travel, name="travel"),
 ]

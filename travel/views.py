@@ -3,7 +3,7 @@ from django.http import HttpResponse, JsonResponse
 from django.contrib.auth.forms import UserCreationForm
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import authenticate, login, logout
-from .models import City, UserProfile, Car
+from .models import City, JourneyDetails, UserProfile, Car
 import json
 
 # Create your views here.
@@ -132,3 +132,17 @@ def handle_cities(request):
         return JsonResponse({'success': True, 'cities': serialized_cities}, status=200)
     except Exception as e:
         return JsonResponse({'success': False, 'message': f'Error: {str(e)}'}, status=500)
+
+def handle_travel(request):
+    if request.method == 'GET':
+        try:
+            pass
+        except:
+            pass
+    elif request.method == 'POST':
+        try:
+            data = json.loads(request.body.decode('utf-8'))
+            if data:
+                return HttpResponse('succeed', status=200)
+        except:
+            pass

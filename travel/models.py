@@ -38,3 +38,24 @@ class Car(models.Model):
 
 class City(models.Model):
     city_name = models.CharField(blank=False, null=False, max_length=40)
+
+class JourneyDetails(models.Model):
+    date = models.TimeField(blank=False, null=False)
+    driver = models.OneToOneField(User, on_delete=models.CASCADE, related_name='driver')
+    origin = models.OneToOneField(City, on_delete=models.CASCADE, related_name='origin')
+    destination = models.OneToOneField(City, on_delete=models.CASCADE, related_name='destination')
+    available_seats = models.PositiveSmallIntegerField()
+
+    def to_json(self):
+        return {
+            'date': self.date,
+            'driver': self.driver,
+            'origin': self.origin,
+            'destination': self.destination,
+            'available_seats': self.available_seats,
+            'passengers': self.passenger
+        }
+
+class Travel(models.Model):
+    journey = models.ManyToManyField(JourneyDetails, related_name='selected_journey')
+    passengers = models.ManyToManyField(UserProfile, related_name='passenger')
