@@ -1,3 +1,5 @@
+from datetime import datetime
+from django.forms import ValidationError
 from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse
 from django.contrib.auth.forms import UserCreationForm
@@ -140,9 +142,31 @@ def handle_travel(request):
         except:
             pass
     elif request.method == 'POST':
+        # Get the user as driver and the journey data
+        data = json.loads(request.body.decode('utf-8'))
+
+        journey_date = data["date"]
+        driver = UserProfile.objects.get(user=request.user)
+        origin = City.objects.get(city_name=data["origin"])
+        destination = City.objects.get(city_name=data["destination"])
+
+        # Create journey and set journey's driver
         try:
-            data = json.loads(request.body.decode('utf-8'))
-            if data:
-                return HttpResponse('succeed', status=200)
+            new_journey = JourneyDetails(
+                date=journey_date,
+                driver=driver, 
+                origin=origin,
+                destination=destination, 
+                available_seats=data["available_seats"]
+            )
+            new_journey.full_clean()
+            new_journey.save()    
+
+            return JsonResponse({'success': True, 'journey': new_journey.new_journey_details()})
+
+        # En caso de errores de validación, devuelve una respuesta JsonResponse con los mensajes de error.
+        except ValidationError as e:
+            return JsonResponse({'success': False, 'message': dict(e)})    
+
         except:
-            pass
+            JsonResponse({'success': False, 'message': 'Could not create journey.'})

@@ -74,7 +74,12 @@ export default async function newTravel(root) {
             available_seats: availableSeats 
           }),
         });
+        const data = await response.json()
         // Check response
-        console.log(response.status);
+        if (data.success) {
+          console.log(data.journey);
+        } else {
+          console.error('Something went wrong:', data.message)
+        }
     })
 }
