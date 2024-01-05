@@ -57,11 +57,12 @@ class JourneyDetails(models.Model):
         if self.origin == self.destination:
             raise ValidationError("Origin and destination city can not be the same.")
 
-    def new_journey_details(self):
+    def journey_details(self):
         return {
             'date': self.date,
             'driver': self.driver.user.username,
             'origin': self.origin.city_name,
             'destination': self.destination.city_name,
-            'available_seats': self.available_seats
+            'available_seats': self.available_seats,
+            'passengers': [passenger.user.username for passenger in self.passengers.all()]
         }

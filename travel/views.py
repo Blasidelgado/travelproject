@@ -138,9 +138,11 @@ def handle_cities(request):
 def handle_travel(request):
     if request.method == 'GET':
         try:
-            pass
+            serialized_journeys = [journey.journey_details() for journey in JourneyDetails.objects.all()]
+            return JsonResponse({'success': True, 'journeys': serialized_journeys})
         except:
-            pass
+            return JsonResponse({'success': False, 'message': f'Error: {str(e)}'}, status=500)
+    
     elif request.method == 'POST':
         # Get the user as driver and the journey data
         data = json.loads(request.body.decode('utf-8'))
@@ -162,7 +164,7 @@ def handle_travel(request):
             new_journey.full_clean()
             new_journey.save()    
 
-            return JsonResponse({'success': True, 'journey': new_journey.new_journey_details()})
+            return JsonResponse({'success': True, 'journey': new_journey.journey_details()})
 
         # En caso de errores de validación, devuelve una respuesta JsonResponse con los mensajes de error.
         except ValidationError as e:
