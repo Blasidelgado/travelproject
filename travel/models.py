@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
 
 
 class UserProfile(models.Model):
@@ -40,19 +41,27 @@ class City(models.Model):
     city_name = models.CharField(blank=False, null=False, max_length=40)
 
 class JourneyDetails(models.Model):
-    date = models.TimeField(blank=False, null=False)
-    driver = models.OneToOneField(UserProfile, on_delete=models.CASCADE, related_name='driver')
-    origin = models.OneToOneField(City, on_delete=models.CASCADE, related_name='origin')
-    destination = models.OneToOneField(City, on_delete=models.CASCADE, related_name='destination')
-    available_seats = models.PositiveSmallIntegerField()
-    passengers = models.ManyToManyField(UserProfile, related_name='passenger')
+    date = models.DateTimeField(blank=False, null=False)
+    driver = models.ForeignKey(UserProfile, blank=False, null=False, on_delete=models.CASCADE, related_name='driven_journeys')
+    origin = models.ForeignKey(City, blank=False, null=False, on_delete=models.CASCADE, related_name='origin_journeys')
+    destination = models.ForeignKey(City, blank=False, null=False, on_delete=models.CASCADE, related_name='destination_journeys')
+    available_seats = models.PositiveSmallIntegerField(null=False)
+    passengers = models.ManyToManyField(UserProfile, related_name='journeys_as_passenger')
 
-    def to_json(self):
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['date', 'driver'], name='unique_journey_for_driver_and_date')
+        ]
+        
+    def clean(self):
+        if self.origin == self.destination:
+            raise ValidationError("Origin and destination city can not be the same.")
+
+    def new_journey_details(self):
         return {
             'date': self.date,
-            'driver': self.driver.username,
+            'driver': self.driver.user.username,
             'origin': self.origin.city_name,
             'destination': self.destination.city_name,
-            'available_seats': self.available_seats,
-            'passengers': self.destination.passengers,
+            'available_seats': self.available_seats
         }
