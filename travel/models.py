@@ -59,6 +59,7 @@ class JourneyDetails(models.Model):
 
     def journey_details(self):
         return {
+            'id': self.id,
             'date': self.date,
             'driver': self.driver.user.username,
             'origin': self.origin.city_name,

@@ -1,4 +1,3 @@
-from datetime import datetime
 from django.forms import ValidationError
 from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse
@@ -135,14 +134,32 @@ def handle_cities(request):
     except Exception as e:
         return JsonResponse({'success': False, 'message': f'Error: {str(e)}'}, status=500)
 
-def handle_travel(request):
+def handle_travel(request, origin_city=None, destination_city=None):
     if request.method == 'GET':
-        try:
-            serialized_journeys = [journey.journey_details() for journey in JourneyDetails.objects.all()]
-            return JsonResponse({'success': True, 'journeys': serialized_journeys})
-        except:
-            return JsonResponse({'success': False, 'message': f'Error: {str(e)}'}, status=500)
-    
+        # Client is requesting specific journeys based on origin and destination
+        if origin_city and destination_city:            
+            try:
+                origin = City.objects.get(city_name=origin_city)
+                destination = City.objects.get(city_name=destination_city)
+
+                # Filtra los viajes basándote en las ciudades de origen y destino
+                journeys = JourneyDetails.objects.filter(origin=origin, destination=destination).order_by('date')
+
+                # Serializa los detalles de los viajes
+                serialized_journeys = [journey.journey_details() for journey in journeys]
+
+                return JsonResponse({'success': True, 'journeys': serialized_journeys}, status=200)
+
+            except City.DoesNotExist:
+                return JsonResponse({'success': False, 'message': 'Ciudad no encontrada.'}, status=404)
+        else:
+            # Client is requesting all journeys
+            try:
+                serialized_journeys = [journey.journey_details() for journey in JourneyDetails.objects.all()]
+                return JsonResponse({'success': True, 'journeys': serialized_journeys})
+            except:
+                return JsonResponse({'success': False, 'message': f'Error: {str(e)}'}, status=500)
+
     elif request.method == 'POST':
         # Get the user as driver and the journey data
         data = json.loads(request.body.decode('utf-8'))
@@ -166,9 +183,8 @@ def handle_travel(request):
 
             return JsonResponse({'success': True, 'journey': new_journey.journey_details()})
 
-        # En caso de errores de validación, devuelve una respuesta JsonResponse con los mensajes de error.
+        # Inform client the validation error
         except ValidationError as e:
-            return JsonResponse({'success': False, 'message': dict(e)})    
-
+            return JsonResponse({'success': False, 'message': dict(e)})            
         except:
             JsonResponse({'success': False, 'message': 'Could not create journey.'})
