@@ -10,7 +10,7 @@ export default async function allJourneys(sessionStatus) {
     // Fetch all journeys and show
     const data = await fetchData('api/travel');
     const container = document.createElement('section');
-    const info = await parseJourneys(data.journeys);
+    const info = parseJourneys(data.journeys);
     info.forEach(journey => container.appendChild(journey));
 
     return container;

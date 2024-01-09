@@ -134,10 +134,11 @@ def handle_cities(request):
     except Exception as e:
         return JsonResponse({'success': False, 'message': f'Error: {str(e)}'}, status=500)
 
-def handle_travel(request, origin_city=None, destination_city=None):
+def handle_travel(request, journey_id=None, origin_city=None, destination_city=None):
     if request.method == 'GET':
+        passenger = UserProfile.objects.get(user=request.user)
         # Client is requesting specific journeys based on origin and destination
-        if origin_city and destination_city:            
+        if origin_city and destination_city:       
             try:
                 origin = City.objects.get(city_name=origin_city)
                 destination = City.objects.get(city_name=destination_city)
@@ -146,12 +147,20 @@ def handle_travel(request, origin_city=None, destination_city=None):
                 journeys = JourneyDetails.objects.filter(origin=origin, destination=destination).order_by('date')
 
                 # Serializa los detalles de los viajes
-                serialized_journeys = [journey.journey_details() for journey in journeys]
+                serialized_journeys = [journey.journey_details() for journey in journeys]                    
 
                 return JsonResponse({'success': True, 'journeys': serialized_journeys}, status=200)
 
             except City.DoesNotExist:
                 return JsonResponse({'success': False, 'message': 'Ciudad no encontrada.'}, status=404)
+        elif journey_id:
+            try:
+                selected_journey = JourneyDetails.objects.get(pk=journey_id)
+                serialized_journey = selected_journey.journey_details()
+                serialized_journey['is_passenger'] = passenger in JourneyDetails.passengers.all()
+                return JsonResponse({'success': True, 'journey': serialized_journey}, status=200)
+            except:
+                pass
         else:
             # Client is requesting all journeys
             try:
@@ -188,3 +197,43 @@ def handle_travel(request, origin_city=None, destination_city=None):
             return JsonResponse({'success': False, 'message': dict(e)})            
         except:
             JsonResponse({'success': False, 'message': 'Could not create journey.'})
+
+    elif request.method == 'PUT':
+        print('El id es:', journey_id)
+        # Join or leave the journey
+        try:
+            data = json.loads(request.body.decode('utf-8'))
+            user_profile = UserProfile.objects.get(user=request.user)
+
+            if journey_id:
+
+                journey = JourneyDetails.objects.get(pk=journey_id)
+
+                #TODO: Devolver en vez de un mensaje el viaje actualizado para responder y poder parsearlo
+                if data.get('action') == 'join':
+                    # Unirse al viaje
+                    print('user:', user_profile)
+                    print(journey.passengers.all())
+                    if user_profile not in journey.passengers.all() and journey.available_seats > 0:
+                        print('adding user:', user_profile)
+                        journey.passengers.add(user_profile)
+                        journey.available_seats -= 1
+                        journey.save()
+                        return JsonResponse({'success': True, 'journey': journey}, status=201)
+                    else:
+                        return JsonResponse({'success': False, 'message': 'Unable to join the journey'}, status=400)
+                elif data.get('action') == 'leave':
+                    # Abandonar el viaje
+                    if user_profile in journey.passengers.all():
+                        journey.passengers.remove(user_profile)
+                        journey.available_seats += 1
+                        journey.save()
+                        return JsonResponse({'success': True, 'message': 'You have successfully left the journey'}, status=201)
+                    else:
+                        return JsonResponse({'success': False, 'message': 'Unable to leave the journey'}, status=400)
+        except UserProfile.DoesNotExist:
+            return JsonResponse({'success': False, 'message': 'User not found'}, status=404)
+        except JourneyDetails.DoesNotExist:
+            return JsonResponse({'success': False, 'message': 'Journey not found'}, status=404)
+        except Exception as e:
+            return JsonResponse({'success': False, 'message': str(e)}, status=500)
