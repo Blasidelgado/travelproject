@@ -11,6 +11,10 @@ export function parseJourney(journey) {
     wrapper.dataset.origin = journey.origin;
     wrapper.dataset.destination = journey.destination;
     wrapper.dataset.seats = journey.available_seats;
+
+    const driverStatus = isDriver(journey.driver);
+    const passengerStatus = isPassenger(journey.passengers);
+
     wrapper.innerHTML = `
         <div class="card text-center">
             <div class="card-header">
@@ -28,8 +32,18 @@ export function parseJourney(journey) {
     `;
 
     const actionBtn = wrapper.querySelector('.action-btn');
-    actionBtn.innerText = journey.is_passenger? 'Leave' : 'Join';
-    actionBtn.onclick = async () => setPassenger(journey.id, journey.is_passenger);
+    if (driverStatus) {
+        actionBtn.innerText = 'Delete journey';
+        actionBtn.onclick = async () => deleteJourney(journey.id);
+    }
+    else if (passengerStatus) {
+        actionBtn.innerText = 'Leave';
+        actionBtn.onclick = async () => updateJourney(journey.id);
+    }
+    else {
+        actionBtn.innerText = 'Join';
+        actionBtn.onclick = async () => updateJourney(journey.id);
+    }
 
     return wrapper;
 }
@@ -43,19 +57,29 @@ export function parseJourneys(journeys) {
     return journeys.map(journey => parseJourney(journey));
 }
 
-async function setPassenger(journeyId, isPassenger) {
-    
-    const postData = {
-        "action": isPassenger ? "leave" : "join"
-    }
-
-    const response = await fetch(`api/travel/${journeyId}/`, {
+async function updateJourney(journeyId) {
+        const response = await fetch(`api/travel/${journeyId}/`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
           "X-CSRFToken": getCSRFCookie("csrftoken"),
         },
-        body: JSON.stringify(postData),
+      });
+      const data = await response.json();
+
+      if (data.success) {
+        console.log('success');
+        console.log(data.journey);
+      }
+}
+
+async function deleteJourney(journeyId) {
+    const response = await fetch(`api/travel/${journeyId}/`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRFToken": getCSRFCookie("csrftoken"),
+        },
       });
       const data = await response.json();
 
@@ -82,4 +106,13 @@ export function parseDate(unformattedDate) {
     const formattedDate = `${day}/${month}/${year} ${hour}:${minutes}`;
 
     return formattedDate;
+}
+
+export function isDriver(driver) {
+    return driver === sessionStorage.getItem('username')
+}
+
+export function isPassenger(journey) {
+    const findUser = journey.find(userId => userId === sessionStorage.getItem('userId'))
+    return !!findUser
 }

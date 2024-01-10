@@ -65,5 +65,5 @@ class JourneyDetails(models.Model):
             'origin': self.origin.city_name,
             'destination': self.destination.city_name,
             'available_seats': self.available_seats,
-            'passengers': [passenger.user.username for passenger in self.passengers.all()]
+            'passengers': [passenger.user.id for passenger in self.passengers.all()]
         }

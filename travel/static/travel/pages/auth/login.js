@@ -60,7 +60,8 @@ export default async function loginPage() {
             const data = await response.json();
             
             if (data.success) {
-                sessionStorage.setItem('user', data.username)
+                sessionStorage.setItem('userId', data.userId)
+                sessionStorage.setItem('username', data.username)
                 await loadPage('home');
             } else {
                 formFields.forEach(input => input.classList.add('is-invalid'));

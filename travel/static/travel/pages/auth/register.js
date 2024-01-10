@@ -67,7 +67,8 @@ export default function registerPage() {
             const data = await response.json();
 
             if (data.success) {
-                sessionStorage.setItem('user', data.username);
+                sessionStorage.setItem('userId', data.userId);
+                sessionStorage.setItem('username', data.username);
                 await loadPage('home');
             } else {
                 // Manejar errores, puedes mostrar mensajes de error
