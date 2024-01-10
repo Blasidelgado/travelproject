@@ -40,7 +40,7 @@ export default function navBar(sessionStatus) {
 
     navBar.querySelectorAll(".page-btn").forEach(btn => {
         btn.addEventListener("click", () => {
-            loadPage(btn.dataset.page, sessionStorage.getItem('user'));
+            loadPage(btn.dataset.page, sessionStorage.getItem('username'));
         })
     });
 
