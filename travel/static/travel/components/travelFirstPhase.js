@@ -84,7 +84,7 @@ function createModal(target) {
 
   modal.querySelector("#load-profile").onclick = () => {
     myModal.hide();
-    loadPage("profile", sessionStorage.getItem('user'));
+    loadPage("profile", sessionStorage.getItem('username'));
   }
 
   return modal;

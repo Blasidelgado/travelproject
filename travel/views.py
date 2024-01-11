@@ -215,7 +215,7 @@ def update_journey(request, journey_id):
                 journey.passengers.add(user)
                 journey.available_seats -= 1
                 journey.save()
-                return JsonResponse({'success': True, 'journey': journey}, status=201)
+                return JsonResponse({'success': True, 'journey': journey.journey_details()}, status=201)
             else:
                 return JsonResponse({'success': False, 'message': 'Journey is full'}, status=400)
                         
@@ -223,7 +223,7 @@ def update_journey(request, journey_id):
             journey.passengers.remove(user)
             journey.available_seats += 1
             journey.save()
-            return JsonResponse({'success': True, 'journey': journey}, status=201)
+            return JsonResponse({'success': True, 'journey': journey.journey_details()}, status=201)
     except UserProfile.DoesNotExist:
         return JsonResponse({'success': False, 'message': 'User not found'}, status=404)
     except JourneyDetails.DoesNotExist:

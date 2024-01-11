@@ -1,3 +1,4 @@
+import { loadPage } from "../index.js";
 import getCSRFCookie from "./csrfHandler.js";
 
 /**
@@ -68,8 +69,10 @@ async function updateJourney(journeyId) {
       const data = await response.json();
 
       if (data.success) {
-        console.log('success');
         console.log(data.journey);
+        loadPage("journeys");
+      } else {
+        console.log(data.message);
       }
 }
 
