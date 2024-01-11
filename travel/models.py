@@ -45,6 +45,7 @@ class JourneyDetails(models.Model):
     driver = models.ForeignKey(UserProfile, blank=False, null=False, on_delete=models.CASCADE, related_name='driven_journeys')
     origin = models.ForeignKey(City, blank=False, null=False, on_delete=models.CASCADE, related_name='origin_journeys')
     destination = models.ForeignKey(City, blank=False, null=False, on_delete=models.CASCADE, related_name='destination_journeys')
+    seat_price = models.PositiveIntegerField(null=False)
     available_seats = models.PositiveSmallIntegerField(null=False)
     passengers = models.ManyToManyField(UserProfile, related_name='journeys_as_passenger')
 
@@ -64,6 +65,7 @@ class JourneyDetails(models.Model):
             'driver': self.driver.user.username,
             'origin': self.origin.city_name,
             'destination': self.destination.city_name,
+            'seat_price': self.seat_price,
             'available_seats': self.available_seats,
             'passengers': [passenger.user.id for passenger in self.passengers.all()]
         }
