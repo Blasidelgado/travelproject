@@ -1,6 +1,6 @@
 export default async function checkSessionStatus() {
     try {
-        const response = await fetch('api/session');
+        const response = await fetch('/api/session');
         const data = await response.json();
         return data.success;
     } catch (error) {

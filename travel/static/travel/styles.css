@@ -128,3 +128,12 @@ legend {
 .driver {
     background-color: #afb1bd;
 }
+
+.driver-profile {
+    text-decoration: underline;
+}
+
+.driver-profile:hover {
+    cursor: pointer;
+    color: blue;
+}

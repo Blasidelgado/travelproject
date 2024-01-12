@@ -34,27 +34,32 @@ export async function loadPage(page, payload) {
     header.innerHTML = '';
     body.innerHTML = '';
     footer.innerHTML = '';
-    const state = { page: page };
-    history.pushState(state, "", `/${page}`);
+    if (page != "profile") {
+        const state = { page: page };
+        history.pushState(state, "", `/${page}`);
+    }
     await updateSessionStatus();
     header.appendChild(navBar(appState.sessionStatus));
     footer.appendChild(footerComponent());
-
+    
     switch(page) {
         case "home":
             body.appendChild(await homePage(appState.sessionStatus));
             break;
-        case "travel":
-            body.appendChild(await travelPage(appState.sessionStatus));
-            break;
-        case "journeys":
-            body.appendChild(await allJourneys(appState.sessionStatus));
-            break;
-        case "profile":
-            body.appendChild(await profilePage(appState.sessionStatus, payload));
+            case "travel":
+                body.appendChild(await travelPage(appState.sessionStatus));
+                break;
+                case "journeys":
+                    body.appendChild(await allJourneys(appState.sessionStatus));
+                    break;
+                case "profile":
+                    const state = { page: page, payload: payload };
+                    history.pushState(state, "", `/${page}/${payload}`);                    
+                    body.appendChild(await profilePage(appState.sessionStatus, payload));
             break;
         case "journey":
                 body.appendChild(await journeyDetail(payload));
+                break;
         case "login":
             if (!appState.sessionStatus) {
                 body.appendChild(await loginPage());
@@ -75,7 +80,8 @@ export async function loadPage(page, payload) {
 window.addEventListener("popstate", (event) => {
     const state = event.state;
     if (state) {
-        loadPage(state.page);
+        const { page, payload } = state;
+        loadPage(page, payload);
     }
 });
 

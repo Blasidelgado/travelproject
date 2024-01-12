@@ -23,7 +23,7 @@ export function parseJourney(journey) {
             </div>
             <div class="card-body">
                 <h5 class="card-title">${parseDate(journey.date)}</h5>
-                <p class="card-text">Driver: ${journey.driver}</p>
+                <p class="card-text">Driver: <span class="driver-profile">${journey.driver}</span></p>
                 <p class="card-text">Seat price: ${journey.seat_price}</p>
                 <btn type='button' class="action-btn btn btn-primary"></btn>
             </div>
@@ -32,6 +32,8 @@ export function parseJourney(journey) {
             </div>
         </div>
     `;
+
+    wrapper.querySelector('.driver-profile').onclick = () => loadPage('profile', journey.driver);
 
     const actionBtn = wrapper.querySelector('.action-btn');
     if (driverStatus) {
