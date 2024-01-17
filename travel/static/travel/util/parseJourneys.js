@@ -13,9 +13,6 @@ export function parseJourney(journey) {
     wrapper.dataset.destination = journey.destination;
     wrapper.dataset.seats = journey.available_seats;
 
-    const driverStatus = isDriver(journey.driver);
-    const passengerStatus = isPassenger(journey.passengers);
-
     wrapper.innerHTML = `
         <div class="card text-center">
             <div class="card-header">
@@ -25,6 +22,7 @@ export function parseJourney(journey) {
                 <h5 class="card-title">${parseDate(journey.date)}</h5>
                 <p class="card-text">Driver: <span class="driver-profile">${journey.driver}</span></p>
                 <p class="card-text">Seat price: ${journey.seat_price}</p>
+                <p class="card-text">IS ACTIVE?: ${journey.isActive}</p>
                 <btn type='button' class="action-btn btn btn-primary"></btn>
             </div>
             <div class="card-footer text-muted">
@@ -36,18 +34,9 @@ export function parseJourney(journey) {
     wrapper.querySelector('.driver-profile').onclick = () => loadPage('profile', journey.driver);
 
     const actionBtn = wrapper.querySelector('.action-btn');
-    if (driverStatus) {
-        actionBtn.innerText = 'Delete journey';
-        actionBtn.onclick = async () => deleteJourney(journey.id);
-    }
-    else if (passengerStatus) {
-        actionBtn.innerText = 'Leave';
-        actionBtn.onclick = async () => updateJourney(journey.id);
-    }
-    else {
-        actionBtn.innerText = 'Join';
-        actionBtn.onclick = async () => updateJourney(journey.id);
-    }
+    actionBtn.innerText = 'See details';
+    actionBtn.onclick = () => loadPage('journey', journey.id);
+
 
     return wrapper;
 }
@@ -112,13 +101,4 @@ export function parseDate(unformattedDate) {
     const formattedDate = `${day}/${month}/${year} ${hour}:${minutes}`;
 
     return formattedDate;
-}
-
-export function isDriver(driver) {
-    return driver === sessionStorage.getItem('username')
-}
-
-export function isPassenger(journey) {
-    const findUser = journey.find(userId => userId === sessionStorage.getItem('userId'))
-    return !!findUser
 }

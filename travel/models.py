@@ -48,6 +48,7 @@ class JourneyDetails(models.Model):
     seat_price = models.PositiveIntegerField(null=False)
     available_seats = models.PositiveSmallIntegerField(null=False)
     passengers = models.ManyToManyField(UserProfile, related_name='journeys_as_passenger')
+    isActive = models.BooleanField(blank=False, null=False, default=True)
 
     class Meta:
         constraints = [
@@ -67,5 +68,7 @@ class JourneyDetails(models.Model):
             'destination': self.destination.city_name,
             'seat_price': self.seat_price,
             'available_seats': self.available_seats,
-            'passengers': [passenger.user.id for passenger in self.passengers.all()]
+            'passengers': [passenger.user.id for passenger in self.passengers.all()],
+            'isActive': self.isActive
+
         }

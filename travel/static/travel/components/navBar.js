@@ -16,6 +16,7 @@ export default function navBar(sessionStatus) {
             <ul class="navbar-nav d-lg-flex justify-content-evenly w-100">
                 <li class="nav-item page-btn" data-page="travel">Travel now</li>
                 <li class="nav-item page-btn" data-page="journeys">All journeys</li>
+                <li class="nav-item page-btn" data-page="myjourneys">My journeys</li>
                 <li class="nav-item page-btn" data-page="profile">My profile</li>
                 <li class="nav-item page-btn" data-page="logout">Logout</li>
             </ul>

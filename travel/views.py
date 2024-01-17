@@ -232,14 +232,15 @@ def update_journey(request, journey_id):
         return JsonResponse({'success': False, 'message': str(e)}, status=500)
 
 
-def delete_journey(request, journey_id):
+def cancel_journey(request, journey_id):
     try:
         user = UserProfile.objects.get(user=request.user)
         journey = JourneyDetails.objects.get(pk=journey_id)
         if journey.driver == user:
-            #Delete the journey
-            journey.delete()
-            return JsonResponse({'success': True, 'message': 'Journey deleted succesfully'}, status=200)
+            # Cancel the journey
+            journey.isActive = not journey.isActive
+            journey.save()
+            return JsonResponse({'success': True, 'message': 'Journey cancelled succesfully'}, status=201)
         else:
             return JsonResponse({'success': False, 'message': 'Not allowed'}, status=403)
 
@@ -263,8 +264,10 @@ def handle_travel(request, journey_id=None, origin_city=None, destination_city=N
     elif request.method == 'POST':
         return create_journey(request)
     elif request.method == 'PUT':
-        return update_journey(request, journey_id)
-    elif request.method == 'DELETE':
-        return delete_journey(request, journey_id)
+        data = json.loads(request.body.decode('utf-8'))
+        if data['action'] == 'update':
+            return update_journey(request, journey_id)
+        elif data['action'] == 'cancel':
+            return cancel_journey(request, journey_id)
     else:
         return JsonResponse({'success': False, 'message': 'Method not allowed'}, status=400)

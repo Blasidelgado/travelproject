@@ -34,9 +34,12 @@ export async function loadPage(page, payload) {
     header.innerHTML = '';
     body.innerHTML = '';
     footer.innerHTML = '';
-    if (page != "profile") {
+    if (page != "profile" || page != "journey") {
         const state = { page: page };
         history.pushState(state, "", `/${page}`);
+    } else {
+        const state = { page: page, payload: payload };
+        history.pushState(state, "", `/${page}/${payload}`);                            
     }
     await updateSessionStatus();
     header.appendChild(navBar(appState.sessionStatus));
@@ -49,17 +52,15 @@ export async function loadPage(page, payload) {
             case "travel":
                 body.appendChild(await travelPage(appState.sessionStatus));
                 break;
-                case "journeys":
-                    body.appendChild(await allJourneys(appState.sessionStatus));
-                    break;
-                case "profile":
-                    const state = { page: page, payload: payload };
-                    history.pushState(state, "", `/${page}/${payload}`);                    
-                    body.appendChild(await profilePage(appState.sessionStatus, payload));
+        case "journeys":
+            body.appendChild(await allJourneys(appState.sessionStatus));
+            break;
+        case "profile":
+            body.appendChild(await profilePage(appState.sessionStatus, payload));
             break;
         case "journey":
-                body.appendChild(await journeyDetail(payload));
-                break;
+            body.appendChild(await journeyDetail(payload));
+            break;
         case "login":
             if (!appState.sessionStatus) {
                 body.appendChild(await loginPage());
