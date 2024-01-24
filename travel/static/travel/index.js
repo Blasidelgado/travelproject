@@ -8,6 +8,7 @@ import profilePage from "./pages/profile.js";
 import footerComponent from "./components/footer.js";
 import allJourneys from "./pages/journeys.js";
 import journeyDetail from "./pages/journeyDetail.js";
+import userJourneys from "./pages/userJourneys.js";
 
 export const appState = {
     sessionStatus: false,
@@ -54,6 +55,9 @@ export async function loadPage(page, payload) {
                 break;
         case "journeys":
             body.appendChild(await allJourneys(appState.sessionStatus));
+            break;
+        case "userJourneys":
+            body.appendChild(await userJourneys(appState.sessionStatus));
             break;
         case "profile":
             body.appendChild(await profilePage(appState.sessionStatus, payload));

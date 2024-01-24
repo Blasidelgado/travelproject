@@ -173,8 +173,17 @@ def retrieve_all_journeys():
     try:
         serialized_journeys = [journey.journey_details() for journey in JourneyDetails.objects.all()]
         return JsonResponse({'success': True, 'journeys': serialized_journeys})
-    except:
+    except Exception as e:
         return JsonResponse({'success': False, 'message': f'Error: {str(e)}'}, status=500)
+    
+
+def retrieve_user_journeys():
+    try:
+        user = UserProfile.objects.get(user=request.user)
+        serialized_journeys = [journey.journey_details() for journey in JourneyDetails.objects.filter()]
+    except Exception as e:
+        return JsonResponse({'success': False, 'message': f'Error: {str(e)}'}, status=500)
+
 
 def create_journey(request):
     data = json.loads(request.body.decode('utf-8'))
@@ -271,3 +280,17 @@ def handle_travel(request, journey_id=None, origin_city=None, destination_city=N
             return cancel_journey(request, journey_id)
     else:
         return JsonResponse({'success': False, 'message': 'Method not allowed'}, status=400)
+
+def retrieve_user_journeys(request):
+    try:
+        user = UserProfile.objects.get(user=request.user)
+        all_journeys = JourneyDetails.objects.filter(driver=user) | JourneyDetails.objects.filter(passengers=user)
+
+        serialized_journeys = [journey.journey_details() for journey in all_journeys]
+
+        return JsonResponse({'success': True, 'journeys': serialized_journeys}, status=200)
+
+    except UserProfile.DoesNotExist:
+        return JsonResponse({'success': False, 'message': 'Usuario no encontrado'}, status=404)
+    except Exception as e:
+        return JsonResponse({'success': False, 'message': f'Error: {str(e)}'}, status=500)
