@@ -1,5 +1,6 @@
 export default function footerComponent() {
-    const footer = document.createElement('section');
+    const footer = document.createElement('footer');
+    footer.classList = 'bg-body-tertiary p-2';
 
     footer.innerHTML = `
           <p id="rights" class="text-center bg-body-tertiary p-3 mb-0" aria-label="Copyright">
