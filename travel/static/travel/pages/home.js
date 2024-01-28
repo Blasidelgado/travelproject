@@ -1,3 +1,5 @@
+import { loadPage } from "../index.js";
+
 export default async function homePage(sessionStatus) {
     const homeContainer = document.createElement('section');
 
@@ -45,18 +47,19 @@ export default async function homePage(sessionStatus) {
     `
 
     const callToAction = document.createElement('section');
-    if (sessionStatus) {
         callToAction.innerHTML = `
-            <div>
-                <h3>Travel now click here</h3>
-                <p>ASLKDHASKFADHJFDLKNMASGHLSKAKBGLJKGAHLKG</p>
-                <button type="button">Travel now</button>
-            </div>
-        `
+        <div class="cta-container">
+            <h3>Embark on Your Next Adventure!</h3>
+            <p>Discover new horizons, create lasting memories, and make every journey an extraordinary experience.</p>
+            <button id="cta-btn" type="button" class="btn btn-primary">Start Your Journey</button>
+        </div>
+        `;
 
-    } else {
-        
-    }
+        if (sessionStatus) {
+            callToAction.querySelector("#cta-btn").onclick = () => loadPage("travel");
+        } else {
+            callToAction.querySelector("#cta-btn").onclick = () => loadPage("login");
+        }
     homeContainer.appendChild(callToAction);
 
     return homeContainer;

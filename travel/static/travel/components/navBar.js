@@ -6,8 +6,8 @@ export default function navBar(sessionStatus) {
 
     navBar.innerHTML = sessionStatus ?
     `<div class="container-fluid flex-nowrap">
-        <div class="container">
-            <img class="navbar-brand page-btn" data-page="home" src="/media/logo.jpg" alt="logo" width="85" height="70">
+        <div class="container img-wrapper">
+            <img class="navbar-brand page-btn" data-page="home" src="/media/logo.jpg" alt="logo" role="button" width="85" height="70">
         </div>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>

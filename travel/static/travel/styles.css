@@ -8,16 +8,17 @@ a {
     cursor: pointer;
 }
 
-main {
-    padding: 1rem;
-}
-
+/* Nav menu */ 
 nav {
     position: relative;
 }
 
 #navbarNav {
     flex-basis: 100%;
+}
+
+.img-wrapper {
+    width: 30%;
 }
 
 #navbarNav li {
@@ -55,7 +56,6 @@ nav {
 }
 
 /* Homepage */
-
 #hero-image {
     position: relative;
     height: 400px;
@@ -79,7 +79,7 @@ nav {
     top: 30%;
     left: 50%;
     transform: translate(-50%, -50%);
-    color: rgb(200, 200, 200);
+    color: rgb(128, 127, 127);
     text-align: center;
 }
 
@@ -95,7 +95,7 @@ legend {
 
 /* Features section */
 .kirk-icon{
-    max-width: 325px;
+    max-width: 250px;
 }
 
 @media screen and (max-width: 767px) {
@@ -105,6 +105,28 @@ legend {
     .kirk-icon{
         margin: 0 5rem;
     }
+}
+
+/* CTA */
+.cta-container {
+    text-align: center;
+    padding: 50px 10px;
+    background-color: rgb(205, 185, 221);
+}
+
+.cta-container h3 {
+    font-size: 2.5rem;
+    margin-bottom: 20px;
+}
+
+.cta-container p {
+    font-size: 1.2rem;
+    color: #555;
+    margin-bottom: 30px;
+}
+
+.cta-container button {
+    font-size: 1.2rem;
 }
 
 /* Estilos para el formulario de inicio de sesión */
