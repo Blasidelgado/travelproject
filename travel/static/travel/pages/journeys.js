@@ -2,11 +2,7 @@ import { loadPage } from "../index.js";
 import fetchData from "../util/fetchData.js";
 import { parseJourneys } from "../util/parseJourneys.js";
 
-export default async function allJourneys(sessionStatus) {
-    if (!sessionStatus) {
-        await loadPage('login')
-    }
-
+export default async function allJourneys() {
     // Fetch all journeys and show
     const data = await fetchData('api/travel');
     const container = document.createElement('section');

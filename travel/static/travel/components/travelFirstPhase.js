@@ -1,24 +1,25 @@
-import { appState, loadPage } from "../index.js";
+import { loadPage } from "../index.js";
 import newTravel from "../pages/newTravel.js";
-import travelPage from "../pages/travel.js";
 import fetchData from "../util/fetchData.js";
 import travelerPhase from "./travelerPhase.js";
 
 export default function travelFirstPhase(root) {
   root.innerHTML = `
-    <div class="page-container">
-        <div class="travel-cto">
-            <div class="travel-card passenger">
-                <p>I am a passenger</p>
-                <button id="travel-passenger">Start</button>
-            </div>
-            <div class="travel-card driver">
-                <p>I am a driver</p>
-                <button id="travel-driver">Start</button>
-            </div>
-        </div>
-    </div>
-`;
+  <div class="py-lg-16 py-10 bg-gray-200">
+  <div class="container">
+      <div class="row justify-content-center text-center">
+          <div class="col-md-9 col-12">
+              <h2 class="display-4">Explore the World with Our Community</h2>
+              <p class="lead px-lg-12 mb-6">Embark on a journey of discovery with our vibrant community of travelers. Learning a new skill is hard work—our platform makes it easier for you to connect and share experiences.</p>
+              <div class="d-grid d-md-block">
+                  <button id="travel-passenger" class="btn btn-primary mb-3 mb-md-0 mx-md-5">Search for Journeys</button>
+                  <button id="travel-driver" class="btn btn-info">Start Your Journey</button>
+              </div>
+          </div>
+      </div>
+  </div>
+</div>
+  `;
 
   root.querySelector("#travel-passenger").onclick = async () => {
     const response = await fetchData("api/permissions");
