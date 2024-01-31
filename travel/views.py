@@ -7,6 +7,7 @@ from django.contrib.auth import authenticate, login, logout
 from .models import City, JourneyDetails, UserProfile, Car
 from django.middleware.csrf import get_token
 import json
+from django.core.paginator import Paginator
 from datetime import datetime, timedelta
 
 
@@ -47,13 +48,15 @@ def create_user(request):
         return JsonResponse({'success': False, 'message': errors}, status=400)
 
 
-def retrieve_users():
+@login_required(login_url="/")
+def retrieve_users(request):
     user_profiles = UserProfile.objects.all()
     users = [user_profile.to_json() for user_profile in user_profiles]
 
     return JsonResponse({'success': True, 'users':users}, status=200)
 
 
+@login_required(login_url="/")
 def retrieve_user(request, username):
     try:
         user = UserProfile.objects.get(user__username=username).to_json()
@@ -65,6 +68,7 @@ def retrieve_user(request, username):
         return JsonResponse({'success': False, 'message': 'User not found'}, status=400)
 
 
+@login_required(login_url="/")
 def update_user(request):
     data = json.loads(request.body.decode('utf-8'))
     first_name, last_name = data.get('first_name'), data.get('last_name')
@@ -94,15 +98,18 @@ def update_user(request):
 def handle_users(request, username=None):
     if request.method == 'POST':
         return create_user(request)
-    elif request.method == 'GET':
-        if username == None:
-            return retrieve_users()
-        else:
-            return retrieve_user(request, username)
-    elif request.method == 'PUT':
-        return update_user(request)
     else:
-        return JsonResponse({'success': False, 'message': 'Method not allowed'}, status=400)
+        if not request.user.is_authenticated: # Prevent unauthorized users to fetch data from server
+            return JsonResponse({'success': False, 'message': 'Not allowed'}, status=403)
+        elif request.method == 'GET':
+            if username == None:
+                return retrieve_users(request)
+            
+            return retrieve_user(request, username)
+        elif request.method == 'PUT':
+            return update_user(request)
+        else:
+            return JsonResponse({'success': False, 'message': 'Method not allowed'}, status=400)
 
 
 def handle_login(request):
@@ -145,6 +152,8 @@ def handle_permissions(request):
         except: 
             return JsonResponse({'success': False, 'message': 'user not found'}, status=404)
 
+
+@login_required(login_url="/")
 def handle_cities(request):
     try:
         cities = City.objects.all()
@@ -152,8 +161,10 @@ def handle_cities(request):
         return JsonResponse({'success': True, 'cities': serialized_cities}, status=200)
     except Exception as e:
         return JsonResponse({'success': False, 'message': f'Error: {str(e)}'}, status=500)
-    
-def retrieve_specified_journeys(origin_city, destination_city):
+
+
+@login_required(login_url="/")
+def retrieve_specified_journeys(request, origin_city, destination_city):
     try:
         origin = City.objects.get(city_name=origin_city)
         destination = City.objects.get(city_name=destination_city)
@@ -166,31 +177,28 @@ def retrieve_specified_journeys(origin_city, destination_city):
 
     except City.DoesNotExist:
         return JsonResponse({'success': False, 'message': 'City not found.'}, status=404)
-    
-def retrieve_journey(journey_id, user):
+
+
+@login_required(login_url="/")
+def retrieve_journey(request, journey_id):
     try:
         selected_journey = JourneyDetails.objects.get(pk=journey_id)
         serialized_journey = selected_journey.journey_details()
         return JsonResponse({'success': True, 'journey': serialized_journey}, status=200)
     except:
         return JsonResponse({'success': False, 'journey': serialized_journey}, status=200)
-    
-def retrieve_all_journeys():
+
+
+@login_required(login_url="/")
+def retrieve_all_journeys(request):
     try:
         serialized_journeys = [journey.journey_details() for journey in JourneyDetails.objects.all()]
         return JsonResponse({'success': True, 'journeys': serialized_journeys})
     except Exception as e:
         return JsonResponse({'success': False, 'message': f'Error: {str(e)}'}, status=500)
-    
-
-def retrieve_user_journeys(request):
-    try:
-        user = UserProfile.objects.get(user=request.user)
-        serialized_journeys = [journey.journey_details() for journey in JourneyDetails.objects.filter()]
-    except Exception as e:
-        return JsonResponse({'success': False, 'message': f'Error: {str(e)}'}, status=500)
 
 
+@login_required(login_url="/")
 def create_journey(request):
     data = json.loads(request.body.decode('utf-8'))
 
@@ -226,6 +234,7 @@ def create_journey(request):
         JsonResponse({'success': False, 'message': 'Could not create journey.'}, status=500)
 
 
+@login_required(login_url="/")
 def update_journey(request, journey_id):
     try:
         user = UserProfile.objects.get(user=request.user)
@@ -253,6 +262,7 @@ def update_journey(request, journey_id):
         return JsonResponse({'success': False, 'message': str(e)}, status=500)
 
 
+@login_required(login_url="/")
 def cancel_journey(request, journey_id):
     try:
         user = UserProfile.objects.get(user=request.user)
@@ -273,15 +283,15 @@ def cancel_journey(request, journey_id):
         return JsonResponse({'success': False, 'message': str(e)}, status=500)
 
 
+@login_required(login_url="/")
 def handle_travel(request, journey_id=None, origin_city=None, destination_city=None):
     if request.method == 'GET':
         if origin_city and destination_city:
-            return retrieve_specified_journeys(origin_city, destination_city)
+            return retrieve_specified_journeys(request, origin_city, destination_city)
         elif journey_id:
-            user = UserProfile.objects.get(user=request.user)
-            return retrieve_journey(journey_id, user)
+            return retrieve_journey(request, journey_id)
         else:
-            return retrieve_all_journeys()
+            return retrieve_all_journeys(request)
     elif request.method == 'POST':
         return create_journey(request)
     elif request.method == 'PUT':
@@ -293,6 +303,8 @@ def handle_travel(request, journey_id=None, origin_city=None, destination_city=N
     else:
         return JsonResponse({'success': False, 'message': 'Method not allowed'}, status=400)
 
+
+@login_required(login_url="/")
 def retrieve_user_journeys(request):
     try:
         user = UserProfile.objects.get(user=request.user)
