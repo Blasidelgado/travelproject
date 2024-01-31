@@ -15,7 +15,13 @@ export default async function journeyDetail(journey_id) {
     const passengerStatus = isPassenger(journey.passengers);
     
     const actionBtn = journeyArt.querySelector('.action-btn');
-    defineJourney();
+
+    // If journey is not active, do not display action button
+    if (!journey.isActive) {
+      journeyArt.querySelector('.card-body').removeChild(actionBtn);
+    } else {
+      defineJourney();
+    }
     container.appendChild(journeyArt);
 
     return container;

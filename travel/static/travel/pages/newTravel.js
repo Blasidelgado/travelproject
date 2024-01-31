@@ -29,6 +29,10 @@ export default async function newTravel(root) {
       <label for="available-seats" class="form-label">Available Seats:</label>
       <input type="number" min="0" max="7" class="form-control" id="available-seats" />
     </fieldset>
+    <fieldset>
+      <label for="seat-price" class="form-label">Seat price:</label>
+      <input type="number" min="0" max="999" class="form-control" id="seat-price" />
+    </fieldset>
     <button type="submit" class="btn btn-primary">Submit</button>
   </form>
 `
@@ -60,6 +64,7 @@ export default async function newTravel(root) {
         const destinationCity = e.target.querySelector('#destination-city').value;
         // Get available seats
         const availableSeats = e.target.querySelector('#available-seats').value;
+        const seatPrice = e.target.querySelector('#seat-price').value;
         // Send data to server
         const response = await fetch('/api/travel', {
           method: 'POST',
@@ -71,7 +76,8 @@ export default async function newTravel(root) {
             date: date,
             origin: originCity,
             destination: destinationCity,
-            available_seats: availableSeats 
+            available_seats: availableSeats,
+            seat_price: seatPrice
           }),
         });
         const data = await response.json()

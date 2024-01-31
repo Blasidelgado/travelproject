@@ -18,15 +18,15 @@ export function parseJourney(journey) {
             <div class="card-header">
                 ${journey.origin} to ${journey.destination}
             </div>
-            <div class="card-body">
+            <div class="card-body ${journey.isActive? 'bg-light' : 'bg-danger'}">
                 <h5 class="card-title">${parseDate(journey.date)}</h5>
                 <p class="card-text">Driver: <span class="driver-profile">${journey.driver}</span></p>
                 <p class="card-text">Seat price: ${journey.seat_price}</p>
-                <p class="card-text">IS ACTIVE?: ${journey.isActive}</p>
+                <p class="card-text">Status: ${journey.isActive ? "active" : "cancelled"}</p>
                 <btn type='button' class="action-btn btn btn-primary"></btn>
             </div>
             <div class="card-footer text-muted">
-                ${journey.available_seats} available seats
+                ${journey.isActive ? `${journey.available_seats} available seats`: ''}
             </div>
         </div>
     `;
