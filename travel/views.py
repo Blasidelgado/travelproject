@@ -2,14 +2,18 @@ from django.forms import ValidationError
 from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse
 from django.contrib.auth.forms import UserCreationForm
-from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
 from .models import City, JourneyDetails, UserProfile, Car
+from django.middleware.csrf import get_token
 import json
+
 
 # Create your views here.
 def index(request):
+    get_token(request)
     return render(request, "travel/index.html", status=200)
+
 
 def create_user(request):
     username = request.POST.get('username')
@@ -58,7 +62,8 @@ def retrieve_user(request, username):
             return JsonResponse({'success': True, 'user': user, 'isEditable': False}, status=200)
     except:
         return JsonResponse({'success': False, 'message': 'User not found'}, status=400)
-    
+
+
 def update_user(request):
     data = json.loads(request.body.decode('utf-8'))
     first_name, last_name = data.get('first_name'), data.get('last_name')
@@ -99,7 +104,7 @@ def handle_users(request, username=None):
         return JsonResponse({'success': False, 'message': 'Method not allowed'}, status=400)
 
 
-def handle_login(request): 
+def handle_login(request):
     if request.method == 'POST': # Attempt to sign user in
         username = request.POST.get('username')
         password = request.POST.get('password')
@@ -125,7 +130,7 @@ def handle_session(request):
     
     return JsonResponse({'success': False}, status=200)
 
-
+@login_required(login_url="/")
 def handle_permissions(request):
     if request.method == 'GET':
         try:
@@ -177,7 +182,7 @@ def retrieve_all_journeys():
         return JsonResponse({'success': False, 'message': f'Error: {str(e)}'}, status=500)
     
 
-def retrieve_user_journeys():
+def retrieve_user_journeys(request):
     try:
         user = UserProfile.objects.get(user=request.user)
         serialized_journeys = [journey.journey_details() for journey in JourneyDetails.objects.filter()]
@@ -200,18 +205,19 @@ def create_journey(request):
             driver=driver, 
             origin=origin,
             destination=destination, 
-            available_seats=data["available_seats"]
+            available_seats=data["available_seats"],
+            seat_price=data["seat_price"]
         )
         new_journey.full_clean()
         new_journey.save()    
 
-        return JsonResponse({'success': True, 'journey': new_journey.journey_details()})
+        return JsonResponse({'success': True, 'journey': new_journey.journey_details()}, status=201)
 
     # Inform client the validation error
     except ValidationError as e:
-        return JsonResponse({'success': False, 'message': dict(e)})            
+        return JsonResponse({'success': False, 'message': dict(e)}, status=400)            
     except:
-        JsonResponse({'success': False, 'message': 'Could not create journey.'})
+        JsonResponse({'success': False, 'message': 'Could not create journey.'}, status=500)
 
 
 def update_journey(request, journey_id):
@@ -263,10 +269,10 @@ def cancel_journey(request, journey_id):
 
 def handle_travel(request, journey_id=None, origin_city=None, destination_city=None):
     if request.method == 'GET':
-        user = UserProfile.objects.get(user=request.user)
         if origin_city and destination_city:
             return retrieve_specified_journeys(origin_city, destination_city)
         elif journey_id:
+            user = UserProfile.objects.get(user=request.user)
             return retrieve_journey(journey_id, user)
         else:
             return retrieve_all_journeys()
