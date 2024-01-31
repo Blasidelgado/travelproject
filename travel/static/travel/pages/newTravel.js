@@ -7,7 +7,7 @@ export default async function newTravel(root) {
   <form id="newTravel-form">
     <fieldset class="mb-3">
       <label for="travel-day" class="form-label">Day:</label>
-      <input type="date" class="form-control" id="travel-day" aria-describedby="travel-day">
+      <input type="date" min=" class="form-control" id="travel-day" aria-describedby="travel-day">
     </fieldset>
     <fieldset class="mb-3">
       <label for="travel-hour" class="form-label">Hour:</label>
@@ -36,6 +36,8 @@ export default async function newTravel(root) {
     <button type="submit" class="btn btn-primary">Submit</button>
   </form>
 `
+
+  root.querySelector('#travel-day').setAttribute('min', generateTomorrowDate());
     // Populate select with cities
     const response = await fetchData('api/cities');
     if (response.success) {
@@ -88,4 +90,15 @@ export default async function newTravel(root) {
           console.error('Something went wrong:', data.message)
         }
     })
+}
+
+function generateTomorrowDate() {
+  const tomorrow = new Date();
+  tomorrow.setDate(tomorrow.getDate() + 1);
+
+  const year = tomorrow.getFullYear();
+  const month = (tomorrow.getMonth() + 1).toString().padStart(2, '0');
+  const day = tomorrow.getDate().toString().padStart(2, '0');
+
+  return `${year}-${month}-${day}`;
 }

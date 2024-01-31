@@ -7,6 +7,7 @@ from django.contrib.auth import authenticate, login, logout
 from .models import City, JourneyDetails, UserProfile, Car
 from django.middleware.csrf import get_token
 import json
+from datetime import datetime, timedelta
 
 
 # Create your views here.
@@ -194,6 +195,11 @@ def create_journey(request):
     data = json.loads(request.body.decode('utf-8'))
 
     journey_date = data["date"]
+    
+    # Check if date is at least the current day + 1
+    if datetime.strptime(journey_date, '%Y-%m-%dT%H:%M:%S.%fZ') < (datetime.now() + timedelta(days=1)):
+        return JsonResponse({'success': False, 'message': 'Invalid date'}, status=400)            
+
     driver = UserProfile.objects.get(user=request.user)
     origin = City.objects.get(city_name=data["origin"])
     destination = City.objects.get(city_name=data["destination"])
