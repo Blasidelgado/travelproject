@@ -1,4 +1,4 @@
-import { loadPage } from "../index.js";
+import { changeAppState } from "../index.js";
 
 export default async function homePage(sessionStatus) {
     const homeContainer = document.createElement('section');
@@ -56,9 +56,9 @@ export default async function homePage(sessionStatus) {
         `;
 
         if (sessionStatus) {
-            callToAction.querySelector("#cta-btn").onclick = () => loadPage("travel");
+            callToAction.querySelector("#cta-btn").onclick = () => changeAppState("travel");
         } else {
-            callToAction.querySelector("#cta-btn").onclick = () => loadPage("login");
+            callToAction.querySelector("#cta-btn").onclick = () => changeAppState("login");
         }
     homeContainer.appendChild(callToAction);
 

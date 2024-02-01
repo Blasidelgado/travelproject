@@ -1,4 +1,4 @@
-import { loadPage } from "../index.js";
+import { changeAppState } from "../index.js";
 
 export default function navBar(sessionStatus) {
     const navBar = document.createElement('nav');
@@ -41,7 +41,7 @@ export default function navBar(sessionStatus) {
 
     navBar.querySelectorAll(".page-btn").forEach(btn => {
         btn.addEventListener("click", () => {
-            loadPage(btn.dataset.page, sessionStorage.getItem('username'));
+            changeAppState(btn.dataset.page, sessionStorage.getItem('username'), 1);
         })
     });
 

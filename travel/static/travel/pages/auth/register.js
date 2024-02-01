@@ -1,5 +1,5 @@
 import getCSRFCookie from "../../util/csrfHandler.js";
-import { loadPage } from "../../index.js";
+import { changeAppState } from "../../index.js";
 
 export default function registerPage() {
     const formContainer = document.createElement('section');
@@ -69,9 +69,8 @@ export default function registerPage() {
             if (data.success) {
                 sessionStorage.setItem('userId', data.userId);
                 sessionStorage.setItem('username', data.username);
-                await loadPage('home');
+                await changeAppState('home');
             } else {
-                // Manejar errores, puedes mostrar mensajes de error
                 console.error('Error de registro:', data.message);
             }
         } catch(error) {

@@ -1,5 +1,5 @@
 import getCSRFCookie from "../../util/csrfHandler.js";
-import { loadPage } from "../../index.js";
+import { changeAppState } from "../../index.js";
 
 export default async function loginPage() {
 
@@ -62,7 +62,7 @@ export default async function loginPage() {
             if (data.success) {
                 sessionStorage.setItem('userId', data.userId)
                 sessionStorage.setItem('username', data.username)
-                await loadPage('home');
+                await changeAppState('home');
             } else {
                 formFields.forEach(input => input.classList.add('is-invalid'));
                 errorMesssage.style.display = 'block';

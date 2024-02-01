@@ -24,24 +24,34 @@ document.addEventListener('DOMContentLoaded', function () {
     root.appendChild(main);
     root.appendChild(footer);
 
-    loadPage('home');
+    changeAppState('home');
 });
 
+export async function changeAppState(page, payload, journeysPage=0) {
+    if (page === "profile") {
+        history.pushState({page: page, payload: payload}, '', `/profile/${payload}`);
+        console.log(payload);
+        loadPage(page, payload);
+    }
+    else if (page === "journey") {
+        history.pushState({page: page, journey: payload}, '', `/journey/${payload}`);
+        loadPage(page, payload, journeysPage);
+    }
+    else {
+        history.pushState({page: page, journeysPage: journeysPage}, '', `/${page}`);
+        loadPage(page)
+    }
+}
 
-export async function loadPage(page, payload) {
+
+export async function loadPage(page, payload, journeysPage=0) {
     const header = document.querySelector("header");
     const body = document.querySelector("main");
     const footer = document.querySelector("footer");
     header.innerHTML = '';
     body.innerHTML = '';
     footer.innerHTML = '';
-    if (page != "profile" || page != "journey") {
-        const state = { page: page };
-        history.pushState(state, "", `/${page}`);
-    } else {
-        const state = { page: page, payload: payload };
-        history.pushState(state, "", `/${page}/${payload}`);                            
-    }
+
     await updateSessionStatus();
     header.appendChild(navBar(appState.sessionStatus));
     footer.appendChild(footerComponent());
@@ -82,11 +92,13 @@ export async function loadPage(page, payload) {
     }
 }
 
-window.addEventListener("popstate", (event) => {
-    const state = event.state;
-    if (state) {
-        const { page, payload } = state;
-        loadPage(page, payload);
+window.addEventListener("popstate", event => {
+    if (event.state && event.state.page) {
+        const page = event.state.page;
+        const payload = event.state.payload;
+        const journeysPage = event.state.journeysPage;
+        console.log(page, payload, journeysPage);
+        loadPage(page, payload, journeysPage);
     }
 });
 

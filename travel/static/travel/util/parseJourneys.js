@@ -68,22 +68,6 @@ async function updateJourney(journeyId) {
       }
 }
 
-async function deleteJourney(journeyId) {
-    const response = await fetch(`api/travel/${journeyId}/`, {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-          "X-CSRFToken": getCSRFCookie("csrftoken"),
-        },
-      });
-      const data = await response.json();
-
-      if (data.success) {
-        console.log('success');
-        console.log(data.journey);
-      }
-}
-
 /**
  * 
  * @param {*} unformattedDate 
