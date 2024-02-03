@@ -7,7 +7,7 @@ export default async function newTravel(root) {
   <form id="newTravel-form">
     <fieldset class="mb-3">
       <label for="travel-day" class="form-label">Day:</label>
-      <input type="date" min=" class="form-control" id="travel-day" aria-describedby="travel-day">
+      <input type="date" class="form-control" id="travel-day" aria-describedby="travel-day">
     </fieldset>
     <fieldset class="mb-3">
       <label for="travel-hour" class="form-label">Hour:</label>
@@ -57,10 +57,23 @@ export default async function newTravel(root) {
 
     root.querySelector('#newTravel-form').addEventListener('submit', async e => {
         e.preventDefault();
-        // Get travel date
-        const date = new Date(e.target.querySelector('#travel-day').value);
-        date.setHours(e.target.querySelector('#travel-hour').value);
-        date.setMinutes(e.target.querySelector('#travel-minutes').value);
+        
+        const dateString = e.target.querySelector('#travel-day').value;
+        const date = new Date(`${dateString}T00:00:00`);
+        
+        // Asegúrate de que las horas y minutos sean válidos
+        const hours = parseInt(e.target.querySelector('#travel-hour').value);
+        const minutes = parseInt(e.target.querySelector('#travel-minutes').value);
+    
+        if (!isNaN(hours) && !isNaN(minutes)) {
+            date.setHours(hours);
+            date.setMinutes(minutes);
+
+            console.log(date);
+            } else {
+            console.error('Invalid hours or minutes');
+            return;
+        }
         // Get origin and destination cities
         const originCity = e.target.querySelector('#origin-city').value;
         const destinationCity = e.target.querySelector('#destination-city').value;

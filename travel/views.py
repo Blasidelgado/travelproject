@@ -4,6 +4,7 @@ from django.http import HttpResponse, JsonResponse
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
+from django.utils import timezone
 from .models import City, JourneyDetails, UserProfile, Car
 from django.middleware.csrf import get_token
 import json
@@ -192,22 +193,30 @@ def retrieve_journey(request, journey_id):
 @login_required(login_url="/")
 def retrieve_all_journeys(request):
     try:
-        serialized_journeys = [journey.journey_details() for journey in JourneyDetails.objects.all()]
+        current_datetime = timezone.now()
+        # Take ongoing AND active journeys only
+        incoming_journeys = JourneyDetails.objects.filter(date__gt=current_datetime, isActive=True).order_by('date')
+        # Get the requested page number
+        page_number = request.GET.get("page")
+        # Paginate the posts and select only the requested ones
+        pages = Paginator(incoming_journeys, 10)
+        journeys = pages.get_page(page_number)
+        serialized_journeys = [journey.journey_details() for journey in journeys]
         return JsonResponse({'success': True, 'journeys': serialized_journeys})
     except Exception as e:
         return JsonResponse({'success': False, 'message': f'Error: {str(e)}'}, status=500)
-
+    
 
 @login_required(login_url="/")
 def create_journey(request):
     data = json.loads(request.body.decode('utf-8'))
 
     journey_date = data["date"]
-    
+    #Checkear por que la fecha se esta pasando mal
+    print(datetime.strptime(journey_date, '%Y-%m-%dT%H:%M:%S.%fZ'))
     # Check if date is at least the current day + 1
     if datetime.strptime(journey_date, '%Y-%m-%dT%H:%M:%S.%fZ') < (datetime.now() + timedelta(days=1)):
-        return JsonResponse({'success': False, 'message': 'Invalid date'}, status=400)            
-
+        return JsonResponse({'success': False, 'message': 'Invalid date'}, status=400)
     driver = UserProfile.objects.get(user=request.user)
     origin = City.objects.get(city_name=data["origin"])
     destination = City.objects.get(city_name=data["destination"])
