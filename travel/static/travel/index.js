@@ -27,7 +27,7 @@ document.addEventListener('DOMContentLoaded', function () {
     changeAppState('home');
 });
 
-export async function changeAppState(page, payload, journeysPage=0) {
+export async function changeAppState(page, payload, journeysPage=1) {
     if (page === "profile") {
         history.pushState({page: page, payload: payload}, '', `/profile/${payload}`);
         console.log(payload);
@@ -44,7 +44,7 @@ export async function changeAppState(page, payload, journeysPage=0) {
 }
 
 
-export async function loadPage(page, payload, journeysPage=0) {
+export async function loadPage(page, payload, journeysPage=1) {
     const header = document.querySelector("header");
     const body = document.querySelector("main");
     const footer = document.querySelector("footer");
@@ -64,7 +64,7 @@ export async function loadPage(page, payload, journeysPage=0) {
                 body.appendChild(await travelPage(appState.sessionStatus));
                 break;
         case "journeys":
-            body.appendChild(await allJourneys());
+            body.appendChild(await allJourneys(journeysPage));
             break;
         case "userJourneys":
             body.appendChild(await userJourneys(appState.sessionStatus));
