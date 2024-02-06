@@ -62,7 +62,7 @@ class JourneyDetails(models.Model):
     def journey_details(self):
         return {
             'id': self.id,
-            'date': self.date,
+            'date': self.date.isoformat(),
             'driver': self.driver.user.username,
             'origin': self.origin.city_name,
             'destination': self.destination.city_name,
@@ -70,5 +70,4 @@ class JourneyDetails(models.Model):
             'available_seats': self.available_seats,
             'passengers': [passenger.user.id for passenger in self.passengers.all()],
             'isActive': self.isActive
-
         }
