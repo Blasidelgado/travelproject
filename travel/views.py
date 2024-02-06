@@ -4,6 +4,7 @@ from django.http import HttpResponse, JsonResponse
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
+from django.db.models import Q
 from django.utils import timezone
 from .models import City, JourneyDetails, UserProfile, Car
 from django.middleware.csrf import get_token
@@ -319,11 +320,23 @@ def handle_travel(request, journey_id=None, origin_city=None, destination_city=N
 def retrieve_user_journeys(request):
     try:
         user = UserProfile.objects.get(user=request.user)
-        all_journeys = JourneyDetails.objects.filter(driver=user) | JourneyDetails.objects.filter(passengers=user)
+        current_datetime = timezone.now()
 
-        serialized_journeys = [journey.journey_details() for journey in all_journeys]
+        # Get all journeys where user is a driver or passenger
+        user_journeys = JourneyDetails.objects.filter(
+            (Q(driver=user) | Q(passengers=user)) & Q(date__gt=current_datetime)
+        ).order_by('date')
 
-        return JsonResponse({'success': True, 'journeys': serialized_journeys}, status=200)
+        # Get requested page
+        page_number = request.GET.get('page')
+
+        # Paginate the posts and select only the requested ones
+        pages = Paginator(user_journeys, 10)
+        journeys = pages.get_page(page_number)
+
+        serialized_journeys = [journey.journey_details() for journey in journeys]
+
+        return JsonResponse({'success': True, 'journeys': serialized_journeys, 'hasPrevious': journeys.has_previous(), 'hasNext': journeys.has_next()}, status=200)
 
     except UserProfile.DoesNotExist:
         return JsonResponse({'success': False, 'message': 'Usuario no encontrado'}, status=404)
