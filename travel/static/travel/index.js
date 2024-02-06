@@ -39,7 +39,7 @@ export async function changeAppState(page, payload, journeysPage=1) {
     }
     else {
         history.pushState({page: page, journeysPage: journeysPage}, '', `/${page}`);
-        loadPage(page)
+        loadPage(page, payload, journeysPage)
     }
 }
 

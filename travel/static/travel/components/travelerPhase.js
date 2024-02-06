@@ -6,9 +6,10 @@ import { parseJourneys } from "../util/parseJourneys.js";
  * @param {HTMLElement} root
  */
 export default async function travelerPhase(root) {
-    root.innerHTML = '<h1>I am the second phase</h1>';
+    root.innerHTML = '<h1>Select your origin and destination cities</h1>';
     
     const container = document.createElement('section');
+
     const journeysContainer = document.createElement('section');
 
     container.innerHTML = `
@@ -32,7 +33,7 @@ export default async function travelerPhase(root) {
     `
 
     root.appendChild(container);
-    root.appendChild(journeysContainer);
+    root.appendChild(journeysContainer)
 
     // Populate select with cities
     const response = await fetchData('api/cities');
@@ -53,16 +54,43 @@ export default async function travelerPhase(root) {
     
     // Make button do a get request to get query cities
     const btn = root.querySelector('#search');
-    btn.onclick = async function() {
+
+    // Capture the changes and update state
+    const selectedOrigin = container.querySelector('#origin');
+    const selectedDestination = container.querySelector('#destination');
+
+    btn.onclick = async () => showJourneys(1, selectedOrigin.value, selectedDestination.value);
+        
+    
+    async function showJourneys(page, origin, destination) {
+
+        // Nav element to navigate through pages
+        const pageNav = document.createElement('nav');
+        pageNav.innerHTML = `
+        <button id="prevPage" type="button">Previous</button>
+        <button id="nextPage" type="button">Next</button>`
+
         journeysContainer.innerHTML = null;
-        const origin = container.querySelector('#origin').value;
-        const destination = container.querySelector('#destination').value;
-        const response = await fetchData(`api/travel/${origin}/${destination}`);
+        // Fetch journeys that match queried data
+        const response = await fetchData(`api/travel/${origin}/${destination}?page=${page}`);
+
         if (response.success) {
-            const availableJourneys = response.journeys;
-            const info = await parseJourneys(availableJourneys)
+            const {journeys, hasNext, hasPrev} = response;
+            const info = parseJourneys(journeys);
             if (info.length > 0) {
+                // Fill container with journeys
                 info.forEach(elem => journeysContainer.appendChild(elem));
+                
+                // Attach event listener to prev and next buttons
+                const prevBtn = pageNav.querySelector('#prevPage')
+                const nextBtn = pageNav.querySelector('#nextPage')
+                
+                if (!hasPrev) prevBtn.setAttribute('disabled', hasPrev);
+                if (!hasNext) nextBtn.setAttribute('disabled', hasNext);
+    
+                prevBtn.onclick = () => showJourneys(page - 1, origin, destination);
+                nextBtn.onclick = () => showJourneys(page + 1, origin, destination);
+                journeysContainer.appendChild(pageNav);
             } else {
                 journeysContainer.innerHTML = '<p class="text-center">Could not find any journeys</p>'
             }

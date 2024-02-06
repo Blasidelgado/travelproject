@@ -169,12 +169,16 @@ def retrieve_specified_journeys(request, origin_city, destination_city):
     try:
         origin = City.objects.get(city_name=origin_city)
         destination = City.objects.get(city_name=destination_city)
-
-        journeys = JourneyDetails.objects.filter(origin=origin, destination=destination).order_by('date')
-
-        serialized_journeys = [journey.journey_details() for journey in journeys]                    
-
-        return JsonResponse({'success': True, 'journeys': serialized_journeys}, status=200)
+        current_datetime = timezone.now()
+        # Take ongoing AND active journeys only
+        incoming_journeys = JourneyDetails.objects.filter(date__gt=current_datetime, origin=origin, destination=destination, isActive=True).order_by('date')
+        # Get the requested page number
+        page_number = request.GET.get("page")
+        # Paginate the posts and select only the requested ones
+        pages = Paginator(incoming_journeys, 10)
+        journeys = pages.get_page(page_number)
+        serialized_journeys = [journey.journey_details() for journey in journeys]
+        return JsonResponse({'success': True, 'journeys': serialized_journeys, "hasNext": journeys.has_next(), "hasPrev": journeys.has_previous()})
 
     except City.DoesNotExist:
         return JsonResponse({'success': False, 'message': 'City not found.'}, status=404)
@@ -202,7 +206,7 @@ def retrieve_all_journeys(request):
         pages = Paginator(incoming_journeys, 10)
         journeys = pages.get_page(page_number)
         serialized_journeys = [journey.journey_details() for journey in journeys]
-        return JsonResponse({'success': True, 'journeys': serialized_journeys})
+        return JsonResponse({'success': True, 'journeys': serialized_journeys, 'hasNext': journeys.has_next(), 'hasPrevious': journeys.has_previous()})
     except Exception as e:
         return JsonResponse({'success': False, 'message': f'Error: {str(e)}'}, status=500)
     
@@ -212,8 +216,6 @@ def create_journey(request):
     data = json.loads(request.body.decode('utf-8'))
 
     journey_date = data["date"]
-    #Checkear por que la fecha se esta pasando mal
-    print(datetime.strptime(journey_date, '%Y-%m-%dT%H:%M:%S.%fZ'))
     # Check if date is at least the current day + 1
     if datetime.strptime(journey_date, '%Y-%m-%dT%H:%M:%S.%fZ') < (datetime.now() + timedelta(days=1)):
         return JsonResponse({'success': False, 'message': 'Invalid date'}, status=400)
