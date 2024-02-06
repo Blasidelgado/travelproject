@@ -1,4 +1,4 @@
-import { loadPage } from "../index.js";
+import { changeAppState, loadPage } from "../index.js";
 import getCSRFCookie from "../util/csrfHandler.js";
 import fetchData from "../util/fetchData.js";
 import { parseJourney } from "../util/parseJourneys.js";
@@ -26,6 +26,11 @@ export default async function journeyDetail(journey_id) {
 
     return container;
     
+    /**
+     * Handler function to attach events to the action button
+     * 
+     * 
+     */
     function defineJourney() {
         if (driverStatus) {
             actionBtn.innerText = 'Cancel journey';
@@ -43,14 +48,19 @@ export default async function journeyDetail(journey_id) {
 }
 
 /**
- * 
- * @param {Array} journeys  
- * @returns {Array} HTML Element journeys
+ * Function to parse journey objects into HTML Elements
+ * @param {object[]} journeys  
+ * @returns {HTMLElement[]}
  */
 export function parseJourneys(journeys) {
     return journeys.map(journey => parseJourney(journey));
 }
 
+/**
+ * Function to change the passengers status
+ * @param {number} journeyId
+ * 
+ */
 async function updateJourney(journeyId) {
         const action = {'action': 'update'}
         const response = await fetch(`api/travel/${journeyId}/`, {
@@ -64,13 +74,18 @@ async function updateJourney(journeyId) {
       const data = await response.json();
 
       if (data.success) {
-        console.log(data.journey);
-        loadPage("journeys", journeyId);
+        // Take user back to /userJourneys page
+        changeAppState("userJourneys");
       } else {
         console.log(data.message);
       }
 }
 
+/**
+ * Function to cancel a journey
+ * @param {number} journeyId 
+ * 
+ */
 async function cancelJourney(journeyId) {
     const action = {'action': 'cancel'}
     const response = await fetch(`api/travel/${journeyId}/`, {
@@ -84,18 +99,28 @@ async function cancelJourney(journeyId) {
       const data = await response.json();
 
       if (data.success) {
-        console.log('success');
-        console.log(data.journey);
+        // Take user back to /userJourneys page
+        changeAppState("userJourneys");
+      } else {
+        console.log(data.message);
       }
 }
 
-
+/**
+ * Function to check if current user is a driver of a journey
+ * @param {string} driver Driver's username 
+ * @returns {boolean} 
+ */
 export function isDriver(driver) {
     return driver === sessionStorage.getItem('username')
 }
 
+/**
+ * Function to check if current is passenger of a journey
+ * @param {number[]} passengers 
+ * @returns {boolean}
+ */
 export function isPassenger(passengers) {
     const findUser = passengers.find(userId => userId === parseInt(sessionStorage.getItem('userId')))
-    console.log(findUser);
     return !!findUser
 }

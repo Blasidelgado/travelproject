@@ -50,24 +50,6 @@ export function parseJourneys(journeys) {
     return journeys.map(journey => parseJourney(journey));
 }
 
-async function updateJourney(journeyId) {
-        const response = await fetch(`api/travel/${journeyId}/`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          "X-CSRFToken": getCSRFCookie("csrftoken"),
-        },
-      });
-      const data = await response.json();
-
-      if (data.success) {
-        console.log(data.journey);
-        loadPage("journeys");
-      } else {
-        console.log(data.message);
-      }
-}
-
 /**
  * 
  * @param {*} unformattedDate 
