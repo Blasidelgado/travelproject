@@ -1,5 +1,6 @@
 import fetchData from "../util/fetchData.js";
 import { parseJourneys } from "../util/parseJourneys.js";
+import pageButtons from "./pageButtons.js";
 
 /**
  * Function to change the view of /travel
@@ -63,14 +64,11 @@ export default async function travelerPhase(root) {
         
     
     async function showJourneys(page, origin, destination) {
+        journeysContainer.innerHTML = null;
 
         // Nav element to navigate through pages
-        const pageNav = document.createElement('nav');
-        pageNav.innerHTML = `
-        <button id="prevPage" type="button">Previous</button>
-        <button id="nextPage" type="button">Next</button>`
-
-        journeysContainer.innerHTML = null;
+        const navBtns = pageButtons();
+        
         // Fetch journeys that match queried data
         const response = await fetchData(`api/travel/${origin}/${destination}?page=${page}`);
 
@@ -82,15 +80,15 @@ export default async function travelerPhase(root) {
                 info.forEach(elem => journeysContainer.appendChild(elem));
                 
                 // Attach event listener to prev and next buttons
-                const prevBtn = pageNav.querySelector('#prevPage')
-                const nextBtn = pageNav.querySelector('#nextPage')
+                const prevBtn = navBtns.querySelector('#prevPage')
+                const nextBtn = navBtns.querySelector('#nextPage')
                 
                 if (!hasPrev) prevBtn.setAttribute('disabled', hasPrev);
                 if (!hasNext) nextBtn.setAttribute('disabled', hasNext);
     
                 prevBtn.onclick = () => showJourneys(page - 1, origin, destination);
                 nextBtn.onclick = () => showJourneys(page + 1, origin, destination);
-                journeysContainer.appendChild(pageNav);
+                journeysContainer.appendChild(navBtns);
             } else {
                 journeysContainer.innerHTML = '<p class="text-center">Could not find any journeys</p>'
             }
