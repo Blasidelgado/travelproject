@@ -206,7 +206,7 @@ export default async function profilePage(sessionStatus, user) {
     }
     // Make the request and parse response
     try {
-      const response = await fetch("api/users", {
+      const response = await fetch("/api/users", {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
