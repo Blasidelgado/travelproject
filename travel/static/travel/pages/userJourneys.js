@@ -20,6 +20,12 @@ export default async function userJourneys(page=1) {
         if (info.length > 0) {
             // Fill container with journeys
             info.forEach(elem => container.appendChild(elem));
+
+            // Add corresponding action to journey buttons
+            container.querySelectorAll('.action-btn').forEach(async btn => {
+                btn.onclick = () => changeAppState("journey", btn.dataset.id) 
+            })
+            
             
             // Attach event listener to prev and next buttons
             const prevBtn = navBtns.querySelector('#prevPage')
