@@ -1,5 +1,5 @@
 from django.forms import ValidationError
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import JsonResponse
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.decorators import login_required
@@ -18,6 +18,10 @@ from datetime import datetime, timedelta
 def index(request):
     get_token(request)
     return render(request, "travel/index.html", status=200)
+
+
+def redirect_to_root(request):
+    return redirect('/')
 
 
 def create_user(request):
