@@ -1,8 +1,9 @@
 from django.forms import ValidationError
 from django.shortcuts import render
-from django.http import HttpResponse, JsonResponse
+from django.http import JsonResponse
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import authenticate, login, logout
 from django.db.models import Q
 from django.utils import timezone
@@ -97,6 +98,7 @@ def update_user(request):
         return JsonResponse({'success': False, 'message': 'Unauthorized'}, status=403)
 
 
+@csrf_exempt
 def handle_users(request, username=None):
     if request.method == 'POST':
         return create_user(request)
@@ -185,17 +187,18 @@ def retrieve_specified_journeys(request, origin_city, destination_city):
         return JsonResponse({'success': False, 'message': 'City not found.'}, status=404)
 
 
-@login_required(login_url="/")
 def retrieve_journey(request, journey_id):
-    try:
-        selected_journey = JourneyDetails.objects.get(pk=journey_id)
-        serialized_journey = selected_journey.journey_details()
-        return JsonResponse({'success': True, 'journey': serialized_journey}, status=200)
-    except:
-        return JsonResponse({'success': False, 'journey': serialized_journey}, status=200)
+    if request.user.is_authenticated:
+        try:
+            selected_journey = JourneyDetails.objects.get(pk=journey_id)
+            serialized_journey = selected_journey.journey_details()
+            return JsonResponse({'success': True, 'journey': serialized_journey}, status=200)
+        except:
+            return JsonResponse({'success': False, 'message': 'Something went wrong'}, status=500)
+    else:
+        return JsonResponse({'success': False, 'message': 'User not authenticated'}, status=401)
 
 
-@login_required(login_url="/")
 def retrieve_all_journeys(request):
     try:
         current_datetime = timezone.now()
@@ -295,7 +298,6 @@ def cancel_journey(request, journey_id):
         return JsonResponse({'success': False, 'message': str(e)}, status=500)
 
 
-@login_required(login_url="/")
 def handle_travel(request, journey_id=None, origin_city=None, destination_city=None):
     if request.method == 'GET':
         if origin_city and destination_city:

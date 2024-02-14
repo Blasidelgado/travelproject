@@ -1,4 +1,4 @@
-import { loadPage } from "../index.js";
+import { changeAppState } from "../index.js";
 import getCSRFCookie from "./csrfHandler.js";
 
 /**
@@ -23,7 +23,7 @@ export function parseJourney(journey) {
                 <p class="card-text">Driver: <span class="driver-profile">${journey.driver}</span></p>
                 <p class="card-text">Seat price: ${journey.seat_price}</p>
                 <p class="card-text">Status: ${journey.isActive ? "active" : "cancelled"}</p>
-                <btn type='button' class="action-btn btn btn-primary"></btn>
+                <btn data-id=${journey.id} type='button' class="action-btn btn btn-primary"></btn>
             </div>
             <div class="card-footer text-muted">
                 ${journey.isActive ? `${journey.available_seats} available seats`: ''}
@@ -31,12 +31,10 @@ export function parseJourney(journey) {
         </div>
     `;
 
-    wrapper.querySelector('.driver-profile').onclick = () => loadPage('profile', journey.driver);
+    wrapper.querySelector('.driver-profile').onclick = () => changeAppState('profile', journey.driver);
 
     const actionBtn = wrapper.querySelector('.action-btn');
     actionBtn.innerText = 'See details';
-    actionBtn.onclick = () => loadPage('journey', journey.id);
-
 
     return wrapper;
 }

@@ -60,9 +60,9 @@ export async function loadPage(page, payload, journeysPage=1) {
         case "home":
             body.appendChild(await homePage(appState.sessionStatus));
             break;
-            case "travel":
-                body.appendChild(await travelPage(appState.sessionStatus));
-                break;
+        case "travel":
+            body.appendChild(await travelPage(appState.sessionStatus));
+            break;
         case "journeys":
             body.appendChild(await allJourneys(journeysPage));
             break;

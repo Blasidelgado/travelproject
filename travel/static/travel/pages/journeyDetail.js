@@ -1,12 +1,16 @@
-import { changeAppState, loadPage } from "../index.js";
+import { changeAppState } from "../index.js";
 import getCSRFCookie from "../util/csrfHandler.js";
 import fetchData from "../util/fetchData.js";
 import { parseJourney } from "../util/parseJourneys.js";
 
 export default async function journeyDetail(journey_id) {
-    const container = document.createElement('section');
+  if (!sessionStorage.getItem('userId')) {
+    return;
+  }
+  const container = document.createElement('section');
 
-    const response = await fetchData(`api/travel/${journey_id}/`);
+  const response = await fetchData(`/api/travel/${journey_id}/`);
+  if (response.success) {
     const journey = response.journey
 
     const journeyArt = parseJourney(journey);
@@ -23,9 +27,10 @@ export default async function journeyDetail(journey_id) {
       defineJourney();
     }
     container.appendChild(journeyArt);
-
-    return container;
     
+    return container;
+
+
     /**
      * Handler function to attach events to the action button
      * 
@@ -45,6 +50,13 @@ export default async function journeyDetail(journey_id) {
             actionBtn.onclick = async () => updateJourney(journey.id);
         }
     }
+  }
+  else if (response.message === "User not authenticated") {
+    changeAppState("login");
+  }
+  else {
+    console.error(response.message);
+  }
 }
 
 /**
@@ -63,7 +75,7 @@ export function parseJourneys(journeys) {
  */
 async function updateJourney(journeyId) {
         const action = {'action': 'update'}
-        const response = await fetch(`api/travel/${journeyId}/`, {
+        const response = await fetch(`/api/travel/${journeyId}/`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -88,7 +100,7 @@ async function updateJourney(journeyId) {
  */
 async function cancelJourney(journeyId) {
     const action = {'action': 'cancel'}
-    const response = await fetch(`api/travel/${journeyId}/`, {
+    const response = await fetch(`/api/travel/${journeyId}/`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

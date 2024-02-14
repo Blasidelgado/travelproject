@@ -2,6 +2,7 @@ import { changeAppState } from "../index.js";
 import fetchData from "../util/fetchData.js";
 import { parseJourneys } from "../util/parseJourneys.js";
 import pageButtons from "../components/pageButtons.js";
+import checkSessionStatus from "../util/handleSession.js";
 
 export default async function allJourneys(page=1) {
     
@@ -23,6 +24,12 @@ export default async function allJourneys(page=1) {
             // Attach event listener to prev and next buttons
             const prevBtn = navBtns.querySelector('#prevPage')
             const nextBtn = navBtns.querySelector('#nextPage')
+
+            // Add corresponding action to journey buttons
+            container.querySelectorAll('.action-btn').forEach(async btn => {
+                btn.onclick = await checkSessionStatus() ? () => changeAppState("journey", btn.dataset.id) 
+                : () => changeAppState("login"); 
+            })
             
             if (!hasPrevious) prevBtn.setAttribute('disabled', hasPrevious);
             if (!hasNext) nextBtn.setAttribute('disabled', hasNext);
