@@ -30,11 +30,10 @@ document.addEventListener('DOMContentLoaded', function () {
 export async function changeAppState(page, payload, journeysPage=1) {
     if (page === "profile") {
         history.pushState({page: page, payload: payload}, '', `/profile/${payload}`);
-        console.log(payload);
         loadPage(page, payload);
     }
     else if (page === "journey") {
-        history.pushState({page: page, journey: payload}, '', `/journey/${payload}`);
+        history.pushState({page: page, payload: payload}, '', `/journey/${payload}`);
         loadPage(page, payload, journeysPage);
     }
     else {
@@ -97,7 +96,6 @@ window.addEventListener("popstate", event => {
         const page = event.state.page;
         const payload = event.state.payload;
         const journeysPage = event.state.journeysPage;
-        console.log(page, payload, journeysPage);
         loadPage(page, payload, journeysPage);
     }
 });
