@@ -1,5 +1,5 @@
 export default function footerComponent() {
-    const footer = document.createElement('footer');
+    const footer = document.createElement('div');
     footer.classList = 'bg-body-tertiary p-2';
 
     footer.innerHTML = `
