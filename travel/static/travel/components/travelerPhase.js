@@ -7,10 +7,11 @@ import pageButtons from "./pageButtons.js";
  * @param {HTMLElement} root
  */
 export default async function travelerPhase(root) {
-    root.innerHTML = '<h1>Select your origin and destination cities</h1>';
-    
-    const container = document.createElement('section');
+    // Clean existing content
+    root.innerHTML = "<h1 class='h1 text-center mt-3'>Select your origin and destination city</h1>";
 
+    // Create the new html content
+    const container = document.createElement('section');
     const journeysContainer = document.createElement('section');
 
     container.innerHTML = `
@@ -29,7 +30,7 @@ export default async function travelerPhase(root) {
     </div>
 
     <div class="input-group mb-3 d-flex justify-content-center">
-        <button id="search" class="btn btn-primary" type="button">Search</button>
+        <button id="search" class="btn btn-primary py-3 px-5" type="button"><strong fs-2 text>Search</strong></button>
     </div>
     `
 
