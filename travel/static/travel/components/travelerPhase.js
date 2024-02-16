@@ -15,23 +15,25 @@ export default async function travelerPhase(root) {
 
     container.innerHTML = `
     <div class="input-group mb-3">
-    <label class="input-group-text" for="origin">Origin</label>
-    <select class="form-select select-city" id="origin">
-        <option selected hidden disabled>Select city</option>
-    </select>
-  </div>
-  
-  <div class="input-group mb-5">
-    <select class="form-select select-city" id="destination">
-        <option selected hidden disabled>Select city</option>
-    </select>
-    <label class="input-group-text" for="destination">Destination</label>
-  </div>
+        <label class="input-group-text" for="origin">Origin</label>
+        <select class="form-select select-city" id="origin">
+            <option selected hidden disabled>Select city</option>
+        </select>
+    </div>
 
-  <div class="input-group mb-3 d-flex justify-center">
-    <button id="search" class="btn btn-primary" type="button">Search</button>
-  </div>
+    <div class="input-group mb-5">
+        <select class="form-select select-city" id="destination">
+            <option selected hidden disabled>Select city</option>
+        </select>
+        <label class="input-group-text" for="destination">Destination</label>
+    </div>
+
+    <div class="input-group mb-3 d-flex justify-content-center">
+        <button id="search" class="btn btn-primary" type="button">Search</button>
+    </div>
     `
+
+    container.classList = "selectCityForm";
 
     root.appendChild(container);
     root.appendChild(journeysContainer)

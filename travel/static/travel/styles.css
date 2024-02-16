@@ -238,3 +238,13 @@ div.item {
     cursor: pointer;
     color: blue;
 }
+
+/* /travel */
+
+.selectCityForm {
+    max-width: 600px;
+    padding: 1rem;
+    margin: 2rem auto;
+    background-color: #788BFF;
+    border-radius: 10px;
+}
