@@ -8,17 +8,17 @@ a {
     cursor: pointer;
 }
 
-/* Nav menu */ 
+/* Header */ 
+.img-wrapper {
+    width: 30%;
+}
+
 nav {
     position: relative;
 }
 
 #navbarNav {
     flex-basis: 100%;
-}
-
-.img-wrapper {
-    width: 30%;
 }
 
 #navbarNav li {
@@ -54,6 +54,7 @@ nav {
         border-top: 1px solid grey;
     }
 }
+
 
 /* Homepage */
 #hero-image {
@@ -94,11 +95,25 @@ legend {
 }
 
 /* Features section */
-.kirk-icon{
-    max-width: 250px;
+div.item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0 5%;
 }
 
-@media screen and (max-width: 767px) {
+.div-item p {
+    text-align: justify;
+}
+
+.kirk-icon{
+    max-width: 250px;
+    transform: translateX(-100%);
+    opacity: 0;
+    transition: transform 0.5s ease, opacity 0.5s ease;
+}
+
+@media screen and (max-width: 1023px) {
     .item-container {
         padding: 0 3rem;
     }
@@ -107,11 +122,32 @@ legend {
     }
 }
 
+/* Svg icon animations */
+@keyframes slideIn {
+    0% {
+        transform: translateX(-100%);
+        opacity: 0;
+    }
+    100% {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+.animated {
+    animation: slideIn 1.5s ease-out forwards;
+}
+
+
 /* CTA */
 .cta-container {
     text-align: center;
     padding: 50px 10px;
-    background-color: rgb(205, 185, 221);
+    background-image: linear-gradient(25deg, #394da8 14%, #9dafd1 86%);
+}
+
+.cta-container * {
+    color: #dce4ec;
 }
 
 .cta-container h3 {
@@ -121,7 +157,6 @@ legend {
 
 .cta-container p {
     font-size: 1.2rem;
-    color: #555;
     margin-bottom: 30px;
 }
 
