@@ -26,7 +26,6 @@ export default async function userJourneys(page=1) {
                 btn.onclick = () => changeAppState("journey", btn.dataset.id) 
             })
             
-            
             // Attach event listener to prev and next buttons
             const prevBtn = navBtns.querySelector('#prevPage')
             const nextBtn = navBtns.querySelector('#nextPage')

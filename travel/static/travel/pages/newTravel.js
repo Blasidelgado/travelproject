@@ -2,8 +2,11 @@ import fetchData from "../util/fetchData.js";
 import getCSRFCookie from "../util/csrfHandler.js";
 
 export default async function newTravel(root) {
+  root.innerHTML = "<h1 class='h1 text-center mt-3'>Please fill information with your next journey</h1>";
 
-    root.innerHTML = `
+  const container = document.createElement("section");
+
+  container.innerHTML = `
   <form id="newTravel-form">
     <fieldset class="mb-3">
       <label for="travel-day" class="form-label">Day:</label>
@@ -37,7 +40,9 @@ export default async function newTravel(root) {
   </form>
 `
 
-  root.querySelector('#travel-day').setAttribute('min', generateTomorrowDate());
+  root.appendChild(container);
+
+  container.querySelector('#travel-day').setAttribute('min', generateTomorrowDate());
     // Populate select with cities
     const response = await fetchData('api/cities');
     if (response.success) {
@@ -55,7 +60,7 @@ export default async function newTravel(root) {
         root.innerHTML = '<h2>Something went wrong, please reload the page</h2>';
     }
 
-    root.querySelector('#newTravel-form').addEventListener('submit', async e => {
+    container.querySelector('#newTravel-form').addEventListener('submit', async e => {
         e.preventDefault();
         
         const dateString = e.target.querySelector('#travel-day').value;

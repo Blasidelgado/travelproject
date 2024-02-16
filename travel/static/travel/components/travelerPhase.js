@@ -1,20 +1,20 @@
 import fetchData from "../util/fetchData.js";
 import { parseJourneys } from "../util/parseJourneys.js";
 import pageButtons from "./pageButtons.js";
+import { changeAppState } from "../index.js";
 
 /**
  * Function to change the view of /travel
  * @param {HTMLElement} root
  */
 export default async function travelerPhase(root) {
-    // Clean existing content
-    root.innerHTML = "<h1 class='h1 text-center mt-3'>Select your origin and destination city</h1>";
+    root.innerHTML = '<h1 class="h1 text-center">Please select your origin and destination city</h1>'
 
-    // Create the new html content
-    const container = document.createElement('section');
+    const formContainer = document.createElement('section');
     const journeysContainer = document.createElement('section');
 
-    container.innerHTML = `
+    // Fill in the query form
+    formContainer.innerHTML = `
     <div class="input-group mb-3">
         <label class="input-group-text" for="origin">Origin</label>
         <select class="form-select select-city" id="origin">
@@ -34,9 +34,9 @@ export default async function travelerPhase(root) {
     </div>
     `
 
-    container.classList = "selectCityForm";
+    formContainer.classList = "selectCityForm";
 
-    root.appendChild(container);
+    root.appendChild(formContainer);
     root.appendChild(journeysContainer)
 
     // Populate select with cities
@@ -60,8 +60,8 @@ export default async function travelerPhase(root) {
     const btn = root.querySelector('#search');
 
     // Capture the changes and update state
-    const selectedOrigin = container.querySelector('#origin');
-    const selectedDestination = container.querySelector('#destination');
+    const selectedOrigin = formContainer.querySelector('#origin');
+    const selectedDestination = formContainer.querySelector('#destination');
 
     btn.onclick = async () => showJourneys(1, selectedOrigin.value, selectedDestination.value);
         
@@ -82,6 +82,12 @@ export default async function travelerPhase(root) {
                 // Fill container with journeys
                 info.forEach(elem => journeysContainer.appendChild(elem));
                 
+
+                // Add corresponding action to journey buttons
+                journeysContainer.querySelectorAll('.action-btn').forEach(async btn => {
+                    btn.onclick = () => changeAppState("journey", btn.dataset.id) 
+                })
+
                 // Attach event listener to prev and next buttons
                 const prevBtn = navBtns.querySelector('#prevPage')
                 const nextBtn = navBtns.querySelector('#nextPage')
