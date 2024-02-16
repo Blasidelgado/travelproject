@@ -1,7 +1,6 @@
 import fetchData from "../util/fetchData.js";
 import { changeAppState } from "../index.js";
-import travelerPhase from "../components/travelerPhase.js";
-import newTravel from "./newTravel.js";
+import newTravel from "./newJourney.js";
 
 
 export default async function travelPage(sessionStatus) {
@@ -31,7 +30,7 @@ export default async function travelPage(sessionStatus) {
         const response = await fetchData("api/permissions");
         const { hasLicense } = response.permissions;
         if (hasLicense) {
-            return travelerPhase(container);
+            return changeAppState("travelerPage");
         } else {
             generateModal("no-license");
         }
@@ -45,7 +44,7 @@ export default async function travelPage(sessionStatus) {
       } else if (!hasCar) {
         generateModal("no-car");
       } else {
-        newTravel(container);
+        return changeAppState("newJourneyPage");
       }
     };
 

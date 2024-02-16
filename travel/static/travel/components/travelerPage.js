@@ -4,11 +4,13 @@ import pageButtons from "./pageButtons.js";
 import { changeAppState } from "../index.js";
 
 /**
- * Function to change the view of /travel
- * @param {HTMLElement} root
+ * 
+ * Function to query journeys selecting cities
+ * 
  */
-export default async function travelerPhase(root) {
-    root.innerHTML = '<h1 class="h1 text-center">Please select your origin and destination city</h1>'
+export default async function travelerPage() {
+    const container = document.createElement("section");
+    container.innerHTML = '<h1 class="h1 text-center">Please select your origin and destination city</h1>'
 
     const formContainer = document.createElement('section');
     const journeysContainer = document.createElement('section');
@@ -36,13 +38,13 @@ export default async function travelerPhase(root) {
 
     formContainer.classList = "selectCityForm";
 
-    root.appendChild(formContainer);
-    root.appendChild(journeysContainer)
+    container.appendChild(formContainer);
+    container.appendChild(journeysContainer)
 
     // Populate select with cities
     const response = await fetchData('api/cities');
     if (response.success) {
-        const selects = root.querySelectorAll('.select-city');
+        const selects = formContainer.querySelectorAll('.select-city');
         
         selects.forEach(select => {
             response.cities.forEach(city => {
@@ -53,18 +55,20 @@ export default async function travelerPhase(root) {
         });
     } else {
         console.log(response.message);
-        root.innerHTML = '<h2>Something went wrong, please reload the page</h2>';
+        journeysContainer.innerHTML = '<h2>Something went wrong, please reload the page</h2>';
     }
     
     // Make button do a get request to get query cities
-    const btn = root.querySelector('#search');
+    const btn = formContainer.querySelector('#search');
 
     // Capture the changes and update state
     const selectedOrigin = formContainer.querySelector('#origin');
     const selectedDestination = formContainer.querySelector('#destination');
 
-    btn.onclick = async () => showJourneys(1, selectedOrigin.value, selectedDestination.value);
-        
+    btn.onclick = async () => showJourneys(1, selectedOrigin.value, selectedDestination.value);        
+
+    return container;
+
     
     async function showJourneys(page, origin, destination) {
         journeysContainer.innerHTML = null;

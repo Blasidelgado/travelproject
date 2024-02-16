@@ -1,12 +1,12 @@
 import fetchData from "../util/fetchData.js";
 import getCSRFCookie from "../util/csrfHandler.js";
 
-export default async function newTravel(root) {
-  root.innerHTML = "<h1 class='h1 text-center mt-3'>Please fill information with your next journey</h1>";
-
+export default async function newJourneyPage() {
   const container = document.createElement("section");
+  container.innerHTML = "<h1 class='h1 text-center mt-3'>Please fill information with your next journey</h1>";
 
-  container.innerHTML = `
+  const form = document.createElement("section");
+  form.innerHTML = `
   <form id="newTravel-form">
     <fieldset class="mb-3">
       <label for="travel-day" class="form-label">Day:</label>
@@ -40,9 +40,9 @@ export default async function newTravel(root) {
   </form>
 `
 
-  root.appendChild(container);
+  container.appendChild(form);
 
-  container.querySelector('#travel-day').setAttribute('min', generateTomorrowDate());
+  form.querySelector('#travel-day').setAttribute('min', generateTomorrowDate());
     // Populate select with cities
     const response = await fetchData('api/cities');
     if (response.success) {
@@ -57,10 +57,10 @@ export default async function newTravel(root) {
         });
     } else {
         console.log(response.message);
-        root.innerHTML = '<h2>Something went wrong, please reload the page</h2>';
+        container.innerHTML = '<h2>Something went wrong, please reload the page</h2>';
     }
 
-    container.querySelector('#newTravel-form').addEventListener('submit', async e => {
+    form.querySelector('#newTravel-form').addEventListener('submit', async e => {
         e.preventDefault();
         
         const dateString = e.target.querySelector('#travel-day').value;
@@ -108,6 +108,8 @@ export default async function newTravel(root) {
           console.error('Something went wrong:', data.message)
         }
     })
+
+    return container;
 }
 
 function generateTomorrowDate() {

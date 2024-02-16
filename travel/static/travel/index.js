@@ -9,6 +9,8 @@ import footerComponent from "./components/footer.js";
 import allJourneys from "./pages/journeys.js";
 import journeyDetail from "./pages/journeyDetail.js";
 import userJourneys from "./pages/userJourneys.js";
+import travelerPage from "./components/travelerPage.js";
+import newJourneyPage from "./pages/newJourney.js";
 
 export const appState = {
     sessionStatus: false,
@@ -61,6 +63,12 @@ export async function loadPage(page, payload, journeysPage=1) {
             break;
         case "travel":
             body.appendChild(await travelPage(appState.sessionStatus));
+            break;
+        case "travelerPage":
+            body.appendChild(await travelerPage());
+            break;
+        case "newJourneyPage":
+            body.appendChild(await newJourneyPage());
             break;
         case "journeys":
             body.appendChild(await allJourneys(journeysPage));
