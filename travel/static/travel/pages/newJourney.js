@@ -39,14 +39,13 @@ export default async function newJourneyPage() {
     <button type="submit" class="btn btn-primary">Submit</button>
   </form>
 `
-
   container.appendChild(form);
 
   form.querySelector('#travel-day').setAttribute('min', generateTomorrowDate());
     // Populate select with cities
     const response = await fetchData('api/cities');
     if (response.success) {
-        const selects = root.querySelectorAll('.select-city');
+        const selects = form.querySelectorAll('.select-city');
 
         selects.forEach(select => {
             response.cities.forEach(city => {
