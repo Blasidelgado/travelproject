@@ -2,7 +2,6 @@ import fetchData from "../util/fetchData.js";
 import { changeAppState } from "../index.js";
 import { loadPage } from "../index.js";
 
-
 export default async function travelPage(sessionStatus) {
     if (!sessionStatus) {
         await changeAppState('login');
