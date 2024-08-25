@@ -1,6 +1,6 @@
 import fetchData from "../util/fetchData.js";
 import { changeAppState } from "../index.js";
-import newTravel from "./newJourney.js";
+import { loadPage } from "../index.js";
 
 
 export default async function travelPage(sessionStatus) {
