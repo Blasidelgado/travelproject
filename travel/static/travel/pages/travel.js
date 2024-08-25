@@ -39,9 +39,9 @@ export default async function travelPage(sessionStatus) {
       const response = await fetchData("api/permissions");
       const { hasLicense, hasCar } = response.permissions;
       if (!hasLicense) {
-        generateModal("no-license");
+        showIncompleteInfoModal("license");
       } else if (!hasCar) {
-        generateModal("no-car");
+        showIncompleteInfoModal("car");
       } else {
         return changeAppState("newJourneyPage");
       }
@@ -50,29 +50,18 @@ export default async function travelPage(sessionStatus) {
     return container;
 }
   
-  let myModal;
-  
-  function generateModal(target) {
-    myModal = new bootstrap.Modal(createModal(target), {
-      backdrop: "static",
-      keyboard: true,
-    });
-  
-    myModal.show();
-  }
-  
-  function createModal(target) {
-    const modal = document.createElement("div");
-    modal.classList = "modal fade";
-    modal.setAttribute("id", "myModal");
+  function showIncompleteInfoModal(missingData) {
+    const modalContent = document.createElement("div");
+    modalContent.classList = "modal fade";
+    modalContent.setAttribute("id", "myModal");
     let message;
-    if (target === "no-license") {
+    if (missingData === "license") {
       message = "Please add your driver license first.";
     } else {
       message = "Please complete your car information first.";
     }
   
-    modal.innerHTML = `
+    modalContent.innerHTML = `
       <div class="modal-dialog modal-dialog-centered">
           <div class="modal-content">
               <div class="modal-header">
@@ -81,16 +70,18 @@ export default async function travelPage(sessionStatus) {
               </div>
               <div class="modal-footer">
                   <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                  <button id="load-profile" type="button" class="btn btn-primary">Go to profile</button>
+                  <button id="load-profile" type="button" class="btn btn-primary" data-bs-dismiss="modal">Go to profile</button>
               </div>
           </div>
       </div>
   `;
   
-    modal.querySelector("#load-profile").onclick = () => {
-        myModal.hide();
+    modalContent.querySelector("#load-profile").onclick = () => {
         loadPage("profile", sessionStorage.getItem('username'));
     }
 
-    return modal;
+    return new bootstrap.Modal(modalContent, {
+      backdrop: "static",
+      keyboard: true,
+    }).show();
 }
