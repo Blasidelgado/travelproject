@@ -45,11 +45,11 @@ export default async function newJourneyPage() {
                 <div id="step-3" class="step">
                   <label for="originCity" class="form-label">Origin:</label>
                   <select id="originCity" class="select-city form-select form-select-lg mb-3" aria-label="Select city">
-                  <option selected hidden disabled>Select city</option>
+                    <option selected hidden disabled>Select city</option>
                   </select>    
                   <label for="destinationCity" class="form-label">Destination:</label>
                   <select id="destinationCity" class="select-city form-select form-select-lg mb-3" aria-label="Select city">
-                  <option selected hidden disabled>Select city</option>
+                    <option selected hidden disabled>Select city</option>
                   </select>
                 </div>
                 <!-- Step 4 content -->
@@ -156,7 +156,13 @@ export default async function newJourneyPage() {
    * Step 3 logic & validation
    */
 
+  journeyOriginCity.addEventListener('change', function() {
+    newJourneyData.originCity = this.value;
+  });
 
+  journeyDestinationCity.addEventListener('change', function() {
+    newJourneyData.destinationCity = this.value;
+  });
 
     // form.querySelector('#newTravel-form').addEventListener('submit', async e => {
     //     e.preventDefault();
@@ -238,6 +244,9 @@ export default async function newJourneyPage() {
           break;
         case 1:
           newJourneyData.hours && newJourneyData.minutes && currentStep++;
+          break;
+        case 2:
+          newJourneyData.originCity && newJourneyData.destinationCity && newJourneyData.originCity !== newJourneyData.destinationCity && currentStep++;
           break;
         default:
           console.log('Something went wrong');
