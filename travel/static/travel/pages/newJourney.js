@@ -33,9 +33,13 @@ export default async function newJourneyPage() {
                 <!-- Step 2 content -->
                 <div id="step-2" class="step">
                   <label for="travelHour" class="form-label">Journey hour:</label>
-                  <select id="travelHour" class="form-control"></select>
+                  <select id="travelHour" class="form-control">
+                    <option value="" selected disabled hidden>Select an hour</option>
+                  </select>
                   <label for="travelMinutes" class="form-label">Journey minutes:</label>
-                  <select id="travelMinutes" class="form-control"></select>
+                  <select id="travelMinutes" class="form-control">
+                    <option value="" selected disabled hidden>Select the minutes</option>
+                  </select>
                 </div>
                 <!-- Step 3 content -->
                 <div id="step-3" class="step">
@@ -146,15 +150,17 @@ export default async function newJourneyPage() {
 
   journeyMinutesInput.addEventListener('change', function() {
     newJourneyData.minutes = this.value;
-    console.log(newJourneyData);
   });
+
+  /**
+   * Step 3 logic & validation
+   */
+
+
 
     // form.querySelector('#newTravel-form').addEventListener('submit', async e => {
     //     e.preventDefault();
-        
-    //     const dateString = e.target.querySelector('#travel-day').value;
-    //     const date = new Date(`${dateString}T00:00:00`);
-        
+                
     //     // Asegúrate de que las horas y minutos sean válidos
     //     const hours = parseInt(e.target.querySelector('#travel-hour').value);
     //     const minutes = parseInt(e.target.querySelector('#travel-minutes').value);
@@ -225,9 +231,13 @@ export default async function newJourneyPage() {
   nextBtn.addEventListener('click', function() {
     if (currentStep < steps.length - 1) {
       console.log(currentStep);
+      console.log(newJourneyData);
       switch(currentStep) {
         case 0:
           newJourneyData.day && currentStep++;
+          break;
+        case 1:
+          newJourneyData.hours && newJourneyData.minutes && currentStep++;
           break;
         default:
           console.log('Something went wrong');
