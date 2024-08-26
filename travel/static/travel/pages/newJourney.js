@@ -26,12 +26,14 @@ export default async function newJourneyPage() {
               </ul>
               <div class="stepsContent">
                 <!-- Step 1 content -->
-                <div id="step-1" class="step">
-                  <label for="travelDay" class="form-label">Select your journey day:</label>
+                <fieldset id="step-1" class="step">
+                  <legend>Journey day</legend>
+                  <label for="travelDay" class="form-label">Select a day:</label>
                   <input id="travelDay" type="date" class="form-control" aria-describedby="travel-day">
-                </div>
+                </fieldset>
                 <!-- Step 2 content -->
-                <div id="step-2" class="step">
+                <fieldset id="step-2" class="step">
+                  <legend>Journey time</legend>
                   <label for="travelHour" class="form-label">Journey hour:</label>
                   <select id="travelHour" class="form-control">
                     <option value="" selected disabled hidden>Select an hour</option>
@@ -40,9 +42,10 @@ export default async function newJourneyPage() {
                   <select id="travelMinutes" class="form-control">
                     <option value="" selected disabled hidden>Select the minutes</option>
                   </select>
-                </div>
+                </fieldset>
                 <!-- Step 3 content -->
-                <div id="step-3" class="step">
+                <fieldset id="step-3" class="step">
+                  <legend>Journey origin and destination</legend>
                   <label for="originCity" class="form-label">Origin:</label>
                   <select id="originCity" class="select-city form-select form-select-lg mb-3" aria-label="Select city">
                     <option selected hidden disabled>Select city</option>
@@ -51,17 +54,18 @@ export default async function newJourneyPage() {
                   <select id="destinationCity" class="select-city form-select form-select-lg mb-3" aria-label="Select city">
                     <option selected hidden disabled>Select city</option>
                   </select>
-                </div>
+                </fieldset>
                 <!-- Step 4 content -->
-                <div id="step-4" class="step">
+                <fieldset id="step-4" class="step">
+                  <legend>Journey seats and price</legend>
                   <label for="availableSeats" class="form-label">Available Seats:</label>
                   <input id="availableSeats" type="number" min="0" max="7" class="form-control"/>
                   <label for="seatPrice" class="form-label">Seat price:</label>
                   <input id="seatPrice" type="number" min="0" max="999" class="form-control"/>
-                </div>
-                <div id="step-5" class="step">
+                </fieldset>
+                <section id="step-5" class="step">
                   <p>Here a detail of your information will be display.</p>
-                </div>
+                </section>
               </div>
               <div class="wizard-buttons">
                 <button id="prevBtn" disabled>Previous</button>
@@ -180,9 +184,6 @@ export default async function newJourneyPage() {
     //         console.error('Invalid hours or minutes');
     //         return;
     //     }
-    //     // Get origin and destination cities
-    //     const originCity = e.target.querySelector('#origin-city').value;
-    //     const destinationCity = e.target.querySelector('#destination-city').value;
     //     // Get available seats
     //     const availableSeats = e.target.querySelector('#available-seats').value;
     //     const seatPrice = e.target.querySelector('#seat-price').value;
