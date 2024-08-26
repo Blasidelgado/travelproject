@@ -150,7 +150,6 @@ div.item {
     animation: slideIn 1.5s ease-out forwards;
 }
 
-
 /* CTA */
 .cta-container {
     text-align: center;
@@ -256,4 +255,33 @@ div.item {
     margin: 2rem auto;
     background-color: #788BFF;
     border-radius: 10px;
+}
+
+/* New Journey Steps */
+.newTravelSteps {
+    max-width: 600px;
+    margin: 0 auto;
+    text-align: center;
+}
+.steps {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+.steps li {
+    width: 24%;
+}
+.steps li.active a {
+    font-weight: bold;
+}
+.stepsContent .step {
+    display: none;
+}
+.stepsContent .step.active {
+    display: block;
+}
+.wizard-buttons {
+    margin-top: 20px;
 }
