@@ -8,16 +8,19 @@ import profilePage from "./pages/profile.js";
 import footerComponent from "./components/footer.js";
 import allJourneys from "./pages/journeys.js";
 import journeyDetail from "./pages/journeyDetail.js";
-import userJourneys from "./pages/userJourneys.js";
-import travelerPage from "./components/travelerPage.js";
+import myJourneys from "./pages/myJourneys.js";
+import searchJourney from "./components/searchJourney.js";
 import newJourneyPage from "./pages/newJourney.js";
+import logout from "./pages/auth/logout.js";
 
 export const appState = {
     sessionStatus: false,
 };
 
-document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('DOMContentLoaded', function() {
+    // Create and append elements after DOMContentLoaded
     const root = document.getElementById('root');
+
     const header = document.createElement('header');
     const main = document.createElement('main');
     const footer = document.createElement('footer');
@@ -26,97 +29,137 @@ document.addEventListener('DOMContentLoaded', function () {
     root.appendChild(main);
     root.appendChild(footer);
 
-    changeAppState('home');
+    // Define the routing table after elements are added to DOM
+    const routes = {
+        '/': () => loadPage('/'),
+        '/journeys': () => loadPage('/journeys'),
+        '/profile/:username': (username) => loadPage('/profile', username),
+        '/travel': () => loadPage('/travel'),
+        '/new-journey': () => loadPage('/new-journey'),
+        '/my-journeys': () => loadPage('/my-journeys'),
+        '/search-journey': () => loadPage('/search-journey'),
+        '/journey/:id': (id) => loadPage('/journey', id),
+        '/login': () => loadPage('/login'),
+        '/register': () => loadPage('/register'),
+        '/logout': () => loadPage('/logout'),
+    };
+
+    // Handle URL change and update the content
+    async function navigateTo(url, payload) {
+        let dynamicUrl = url;
+        if (dynamicUrl.startsWith('/profile') || dynamicUrl === '/journey') {
+            dynamicUrl = `${url}/${payload}`;
+        }
+        console.log(dynamicUrl);
+        history.pushState({ url: dynamicUrl, payload }, '', dynamicUrl);
+        router();
+    }
+
+async function router() {
+    const path = window.location.pathname;
+    const route = Object.keys(routes).find(route => {
+        // Match static paths
+        if (route === path) return true;
+        // Match dynamic paths
+        const routeRegex = new RegExp(`^${route.replace(/:\w+/g, '([^/]+)')}$`);
+        return routeRegex.test(path);
+    });
+
+    if (!route) {
+        console.error('Route not found');
+        return;
+    }
+
+    const routeParams = extractParams(route, path);
+
+    // Execute the route function, passing dynamic parameters if necessary
+    await routes[route](...routeParams);
+}
+
+// Helper function to extract dynamic parameters from the URL
+function extractParams(route, path) {
+    const paramNames = (route.match(/:\w+/g) || []).map(param => param.substring(1));
+    const values = path.match(new RegExp(route.replace(/:\w+/g, '([^/]+)'))).slice(1);
+    return paramNames.length ? values : [];
+}
+
+    // Event listener for navigation links
+    document.addEventListener('click', (event) => {
+        if (event.target.matches('[data-page')) {
+            event.preventDefault();
+            navigateTo(event.target.dataset.page, sessionStorage.getItem('username'));
+        }
+    });
+
+    // Handle back/forward button navigation
+    window.addEventListener('popstate', router);
+
+    // Initialize the router when the page loads
+    router();
+
+    async function loadPage(page, payload, journeysPage=1) {
+        const header = document.querySelector("header");
+        const body = document.querySelector("main");
+        const footer = document.querySelector("footer");
+        if (!header || !body || !footer) {
+            console.error("Header, main, or footer not found in the DOM");
+            return;
+        }
+    
+        header.innerHTML = null;
+        body.innerHTML = null;
+        footer.innerHTML = null;
+    
+        await updateSessionStatus();
+        header.appendChild(navBar(appState.sessionStatus));
+        footer.appendChild(footerComponent());
+        
+        switch(page) {
+            case '/':
+                body.appendChild(await homePage(appState.sessionStatus));
+                break;
+            case '/travel':
+                body.appendChild(await travelPage(navigateTo));
+                break;
+            case '/search-journey':
+                body.appendChild(await searchJourney());
+                break;
+            case '/new-journey':
+                body.appendChild(await newJourneyPage());
+                break;
+            case '/journeys':
+                body.appendChild(await allJourneys(journeysPage, navigateTo));
+                break;
+            case '/my-journeys':
+                body.appendChild(await myJourneys(journeysPage, navigateTo));
+                break;
+            case '/profile':
+                body.appendChild(await profilePage(appState.sessionStatus, payload));
+                break;
+            case '/journey':
+                body.appendChild(await journeyDetail(payload, navigateTo));
+                break;
+            case '/login':
+                if (!appState.sessionStatus) {
+                    body.appendChild(await loginPage(navigateTo));
+                    break;
+                } else {
+                    body.appendChild(await homePage(appState.sessionStatus));
+                    break;
+                }
+            case '/register':
+                body.appendChild(registerPage(navigateTo));
+                break;
+            case '/logout':
+                await logout(navigateTo);
+                break;
+        }
+    }
 });
 
 export async function changeAppState(page, payload, journeysPage=1) {
-    if (page === "profile") {
-        history.pushState({page: page, payload: payload}, '', `/profile/${payload}`);
-        loadPage(page, payload);
-    }
-    else if (page === "journey") {
-        history.pushState({page: page, payload: payload}, '', `/journey/${payload}`);
-        loadPage(page, payload, journeysPage);
-    }
-    else {
-        history.pushState({page: page, journeysPage: journeysPage}, '', `/${page}`);
-        loadPage(page, payload, journeysPage)
-    }
 }
-
-
-export async function loadPage(page, payload, journeysPage=1) {
-    const header = document.querySelector("header");
-    const body = document.querySelector("main");
-    const footer = document.querySelector("footer");
-    header.innerHTML = '';
-    body.innerHTML = '';
-    footer.innerHTML = '';
-
-    await updateSessionStatus();
-    header.appendChild(navBar(appState.sessionStatus));
-    footer.appendChild(footerComponent());
-    
-    switch(page) {
-        case "home":
-            body.appendChild(await homePage(appState.sessionStatus));
-            break;
-        case "travel":
-            body.appendChild(await travelPage(appState.sessionStatus));
-            break;
-        case "travelerPage":
-            body.appendChild(await travelerPage());
-            break;
-        case "newJourneyPage":
-            body.appendChild(await newJourneyPage());
-            break;
-        case "journeys":
-            body.appendChild(await allJourneys(journeysPage));
-            break;
-        case "userJourneys":
-            body.appendChild(await userJourneys(journeysPage));
-            break;
-        case "profile":
-            body.appendChild(await profilePage(appState.sessionStatus, payload));
-            break;
-        case "journey":
-            body.appendChild(await journeyDetail(payload));
-            break;
-        case "login":
-            if (!appState.sessionStatus) {
-                body.appendChild(await loginPage());
-                break;
-            } else {
-                body.appendChild(await homePage(appState.sessionStatus));
-                break;
-            }
-        case "register":
-            body.appendChild(registerPage());
-            break;
-        case "logout":
-            await logout();
-            break;
-    }
-}
-
-window.addEventListener("popstate", event => {
-    if (event.state && event.state.page) {
-        const page = event.state.page;
-        const payload = event.state.payload;
-        const journeysPage = event.state.journeysPage;
-        loadPage(page, payload, journeysPage);
-    }
-});
 
 async function updateSessionStatus() {
     appState.sessionStatus = await checkSessionStatus();
-}
-
-async function logout() {
-    const response = await fetch('api/logout');
-    const data = await response.json()
-    if (data.success) {
-        sessionStorage.removeItem('user')
-        await loadPage('home');
-    } 
 }
