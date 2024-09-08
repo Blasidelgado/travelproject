@@ -32,7 +32,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Define the routing table after elements are added to DOM
     const routes = {
         '/': () => loadPage('/'),
-        '/journeys': () => loadPage('/journeys'),
+        '/journeys': (page) => loadPage('/journeys', page),
         '/profile/:username': (username) => loadPage('/profile', username),
         '/travel': () => loadPage('/travel'),
         '/new-journey': () => loadPage('/new-journey'),
@@ -50,44 +50,57 @@ document.addEventListener('DOMContentLoaded', function() {
         if (dynamicUrl.startsWith('/profile') || dynamicUrl === '/journey') {
             dynamicUrl = `${url}/${payload}`;
         }
+        if (dynamicUrl.startsWith('/journeys') && payload) {
+            dynamicUrl = `${url}?page=${payload}`
+        }
         console.log(dynamicUrl);
         history.pushState({ url: dynamicUrl, payload }, '', dynamicUrl);
         router();
     }
 
-async function router() {
-    const path = window.location.pathname;
-    const route = Object.keys(routes).find(route => {
-        // Match static paths
-        if (route === path) return true;
-        // Match dynamic paths
+    async function router() {
+        const path = window.location.pathname;
+        const searchParams = new URLSearchParams(window.location.search);
+        const pageParam = searchParams.get('page');
+        
+        const route = Object.keys(routes).find(route => {
+            // Match static paths
+            if (route === path) return true;
+            
+            // Match dynamic paths
+            const routeRegex = new RegExp(`^${route.replace(/:\w+/g, '([^/]+)')}$`);
+            return routeRegex.test(path);
+        });
+    
+        if (!route) {
+            console.error('Route not found');
+            return;
+        }
+    
+        // Extract dynamic parameters from the path
         const routeRegex = new RegExp(`^${route.replace(/:\w+/g, '([^/]+)')}$`);
-        return routeRegex.test(path);
-    });
-
-    if (!route) {
-        console.error('Route not found');
-        return;
+        const match = path.match(routeRegex);
+    
+        // Call the route handler with the extracted parameters
+        if (match && match.length > 1) {
+            routes[route](match[1]);
+        } else if (route === '/journeys' && pageParam) {
+            routes['/journeys'](pageParam);
+        } else {
+            routes[route]();
+        }
     }
-
-    const routeParams = extractParams(route, path);
-
-    // Execute the route function, passing dynamic parameters if necessary
-    await routes[route](...routeParams);
-}
-
-// Helper function to extract dynamic parameters from the URL
-function extractParams(route, path) {
-    const paramNames = (route.match(/:\w+/g) || []).map(param => param.substring(1));
-    const values = path.match(new RegExp(route.replace(/:\w+/g, '([^/]+)'))).slice(1);
-    return paramNames.length ? values : [];
-}
 
     // Event listener for navigation links
     document.addEventListener('click', (event) => {
         if (event.target.matches('[data-page')) {
             event.preventDefault();
-            navigateTo(event.target.dataset.page, sessionStorage.getItem('username'));
+            navigateTo(
+                event.target.dataset.page,
+                event.target.dataset.page === '/profile' ? 
+                    sessionStorage.getItem('username') :
+                    null
+            )
         }
     });
 
@@ -97,7 +110,7 @@ function extractParams(route, path) {
     // Initialize the router when the page loads
     router();
 
-    async function loadPage(page, payload, journeysPage=1) {
+    async function loadPage(page, payload) {
         const header = document.querySelector("header");
         const body = document.querySelector("main");
         const footer = document.querySelector("footer");
@@ -128,7 +141,7 @@ function extractParams(route, path) {
                 body.appendChild(await newJourneyPage());
                 break;
             case '/journeys':
-                body.appendChild(await allJourneys(journeysPage, navigateTo));
+                body.appendChild(await allJourneys(navigateTo, payload));
                 break;
             case '/my-journeys':
                 body.appendChild(await myJourneys(journeysPage, navigateTo));
