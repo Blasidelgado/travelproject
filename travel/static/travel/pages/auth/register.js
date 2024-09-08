@@ -1,7 +1,6 @@
 import getCSRFCookie from "../../util/csrfHandler.js";
-import { changeAppState } from "../../index.js";
 
-export default function registerPage() {
+export default function registerPage(navigateTo) {
     const formContainer = document.createElement('section');
     const registrationForm = document.createElement('form');
 
@@ -51,7 +50,7 @@ export default function registerPage() {
 
     formContainer.appendChild(registrationForm);
 
-    // Manejar el envío del formulario
+    // Handle register form submission
     registrationForm.addEventListener('submit', async function (event) {
         event.preventDefault();
         const formData = new FormData(registrationForm);
@@ -69,7 +68,7 @@ export default function registerPage() {
             if (data.success) {
                 sessionStorage.setItem('userId', data.userId);
                 sessionStorage.setItem('username', data.username);
-                await changeAppState('home');
+                await navigateTo('/');
             } else {
                 console.error('Error de registro:', data.message);
             }
@@ -79,7 +78,7 @@ export default function registerPage() {
     });
 
     // Sign in link should redirect to login page
-    registrationForm.querySelector('#signin-btn').onclick = async () =>  await loadPage('login');
+    registrationForm.querySelector('#signin-btn').onclick = async () =>  await navigateTo('/login');
 
     return formContainer;
 };
