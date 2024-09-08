@@ -1,7 +1,6 @@
 import getCSRFCookie from "../../util/csrfHandler.js";
-import { changeAppState } from "../../index.js";
 
-export default async function loginPage() {
+export default async function loginPage(navigateTo) {
 
     const formContainer = document.createElement('section');
     const loginForm = document.createElement('form');
@@ -62,7 +61,7 @@ export default async function loginPage() {
             if (data.success) {
                 sessionStorage.setItem('userId', data.userId)
                 sessionStorage.setItem('username', data.username)
-                await changeAppState('home');
+                await navigateTo('/');
             } else {
                 formFields.forEach(input => input.classList.add('is-invalid'));
                 errorMesssage.style.display = 'block';
@@ -73,7 +72,9 @@ export default async function loginPage() {
     });
 
     // Sign up link should redirect to register page
-    loginForm.querySelector('#signup-btn').onclick = async () =>  await loadPage('register');
-
+    loginForm.querySelector('#signup-btn').onclick = async () =>  {
+        await navigateTo('/register');
+    }
+    
     return formContainer;
 };
