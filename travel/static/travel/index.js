@@ -36,7 +36,7 @@ document.addEventListener('DOMContentLoaded', function() {
         '/profile/:username': (username) => loadPage('/profile', username),
         '/travel': () => loadPage('/travel'),
         '/new-journey': () => loadPage('/new-journey'),
-        '/my-journeys': () => loadPage('/my-journeys'),
+        '/my-journeys': (page) => loadPage('/my-journeys', page),
         '/search-journey': () => loadPage('/search-journey'),
         '/journey/:id': (id) => loadPage('/journey', id),
         '/login': () => loadPage('/login'),
@@ -50,7 +50,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (dynamicUrl.startsWith('/profile') || dynamicUrl === '/journey') {
             dynamicUrl = `${url}/${payload}`;
         }
-        if (dynamicUrl.startsWith('/journeys') && payload) {
+        if (dynamicUrl.startsWith('/journeys') && payload || dynamicUrl.startsWith('/my-journeys') && payload) {
             dynamicUrl = `${url}?page=${payload}`
         }
         console.log(dynamicUrl);
@@ -79,15 +79,12 @@ document.addEventListener('DOMContentLoaded', function() {
     
         // Extract dynamic parameters from the path
         const routeRegex = new RegExp(`^${route.replace(/:\w+/g, '([^/]+)')}$`);
-        const match = path.match(routeRegex);
-    
+        const match = path.match(routeRegex);    
         // Call the route handler with the extracted parameters
         if (match && match.length > 1) {
             routes[route](match[1]);
-        } else if (route === '/journeys' && pageParam) {
-            routes['/journeys'](pageParam);
         } else {
-            routes[route]();
+            routes[route](pageParam);
         }
     }
 
@@ -144,7 +141,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 body.appendChild(await allJourneys(navigateTo, payload));
                 break;
             case '/my-journeys':
-                body.appendChild(await myJourneys(journeysPage, navigateTo));
+                body.appendChild(await myJourneys(navigateTo, payload));
                 break;
             case '/profile':
                 body.appendChild(await profilePage(appState.sessionStatus, payload));
