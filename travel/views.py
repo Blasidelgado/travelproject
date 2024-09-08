@@ -15,7 +15,7 @@ from datetime import datetime, timedelta
 
 
 # Create your views here.
-def index(request):
+def index(request, subpath = None):
     get_token(request)
     return render(request, "travel/index.html", status=200)
 
