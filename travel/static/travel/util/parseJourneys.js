@@ -1,12 +1,11 @@
-import { changeAppState } from "../index.js";
-import getCSRFCookie from "./csrfHandler.js";
+import checkSessionStatus from "./handleSession.js";
 
 /**
  * 
  * @param {Object} journey 
  * @returns {HTMLElement} Journey
  */
-export function parseJourney(journey) {
+export function parseJourney(journey, navigateTo) {
     const wrapper = document.createElement('article');
     wrapper.dataset.id = journey.id;
     wrapper.dataset.origin = journey.origin;
@@ -31,9 +30,12 @@ export function parseJourney(journey) {
         </div>
     `;
 
-    wrapper.querySelector('.driver-profile').onclick = () => changeAppState('profile', journey.driver);
-
+    wrapper.querySelector('.driver-profile').onclick = async () => navigateTo(
+                                                await checkSessionStatus() ? ('/profile', journey.driver) :
+                                                '/login'
+                                            );
     const actionBtn = wrapper.querySelector('.action-btn');
+
     actionBtn.innerText = 'See details';
 
     return wrapper;
@@ -44,8 +46,8 @@ export function parseJourney(journey) {
  * @param {Array} journeys  
  * @returns {Array} HTML Element journeys
  */
-export function parseJourneys(journeys) {
-    return journeys.map(journey => parseJourney(journey));
+export function parseJourneys(journeys, navigateTo) {
+    return journeys.map(journey => parseJourney(journey, navigateTo));
 }
 
 /**

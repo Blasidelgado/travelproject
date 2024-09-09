@@ -1,11 +1,8 @@
 import getCSRFCookie from "../util/csrfHandler.js";
-import { loadPage } from "../index.js";
 import fetchData from "../util/fetchData.js";
+import checkSessionStatus from "../util/handleSession.js";
 
-export default async function profilePage(sessionStatus, user) {
-  if (!sessionStatus) {
-    loadPage("login");
-  }
+export default async function profilePage(navigateTo, user) {
 
   // State variables
   let isEditing = false;
@@ -270,6 +267,8 @@ export default async function profilePage(sessionStatus, user) {
       submitBtn.style.display = isEditing ? "block" : "none";
     } else {
       pageContainer.querySelector("#control-btns").style.display = "none";
+      inputs.forEach(input => input.placeholder = '');
+      textarea.placeholder = '';
     }
   }
 }
