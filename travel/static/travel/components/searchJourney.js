@@ -8,7 +8,7 @@ import { changeAppState } from "../index.js";
  * Function to query journeys selecting cities
  * 
  */
-export default async function travelerPage() {
+export default async function searchJourneyPage() {
     const container = document.createElement("section");
     container.innerHTML = '<h1 class="h1 text-center">Please select your origin and destination city</h1>'
 
