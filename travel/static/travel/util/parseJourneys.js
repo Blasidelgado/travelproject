@@ -30,10 +30,9 @@ export function parseJourney(journey, navigateTo) {
         </div>
     `;
 
-    wrapper.querySelector('.driver-profile').onclick = async () => navigateTo(
-                                                await checkSessionStatus() ? ('/profile', journey.driver) :
-                                                '/login'
-                                            );
+    wrapper.querySelector('.driver-profile').onclick = async () =>
+                                                await checkSessionStatus() ? navigateTo('/profile', journey.driver)
+                                                : navigateTo('/login')
     const actionBtn = wrapper.querySelector('.action-btn');
 
     actionBtn.innerText = 'See details';

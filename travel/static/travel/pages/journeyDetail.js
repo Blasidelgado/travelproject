@@ -3,7 +3,8 @@ import getCSRFCookie from "../util/csrfHandler.js";
 import fetchData from "../util/fetchData.js";
 import { parseJourney } from "../util/parseJourneys.js";
 
-export default async function journeyDetail(journey_id) {
+export default async function journeyDetail(journey_id, navigateTo) {
+  console.log(journeyDetail);
   if (!sessionStorage.getItem('userId')) {
     return;
   }
@@ -13,7 +14,7 @@ export default async function journeyDetail(journey_id) {
   if (response.success) {
     const journey = response.journey
 
-    const journeyArt = parseJourney(journey);
+    const journeyArt = parseJourney(journey, navigateTo);
     
     const driverStatus = isDriver(journey.driver);
     const passengerStatus = isPassenger(journey.passengers);
@@ -52,7 +53,7 @@ export default async function journeyDetail(journey_id) {
     }
   }
   else if (response.message === "User not authenticated") {
-    changeAppState("login");
+    navigateTo('/login');
   }
   else {
     console.error(response.message);
@@ -64,8 +65,8 @@ export default async function journeyDetail(journey_id) {
  * @param {object[]} journeys  
  * @returns {HTMLElement[]}
  */
-export function parseJourneys(journeys) {
-    return journeys.map(journey => parseJourney(journey));
+export function parseJourneys(journeys, navigateTo) {
+    return journeys.map(journey => parseJourney(journey, navigateTo));
 }
 
 /**
