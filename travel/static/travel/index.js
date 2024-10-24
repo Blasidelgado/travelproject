@@ -53,7 +53,6 @@ document.addEventListener('DOMContentLoaded', function() {
         if (dynamicUrl.startsWith('/journeys') && payload || dynamicUrl.startsWith('/my-journeys') && payload) {
             dynamicUrl = `${url}?page=${payload}`
         }
-        console.log(dynamicUrl);
         history.pushState({ url: dynamicUrl, payload }, '', dynamicUrl);
         router();
     }
@@ -167,8 +166,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-export async function changeAppState(page, payload, journeysPage=1) {
-}
 
 async function updateSessionStatus() {
     appState.sessionStatus = await checkSessionStatus();
