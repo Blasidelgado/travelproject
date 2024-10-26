@@ -1,5 +1,3 @@
-import { changeAppState } from "../index.js";
-
 export default function navBar(sessionStatus) {
     const navBar = document.createElement('nav');
     navBar.classList = 'navbar navbar-expand-lg bg-body-tertiary p-3';

@@ -1,7 +1,6 @@
 import fetchData from "../util/fetchData.js";
 import { parseJourneys } from "../util/parseJourneys.js";
 import pageButtons from "./pageButtons.js";
-import { changeAppState } from "../index.js";
 
 /**
  * 

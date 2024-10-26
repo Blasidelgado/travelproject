@@ -1,5 +1,3 @@
-import { changeAppState } from "../index.js";
-
 export default async function homePage(sessionStatus) {
     const homeContainer = document.createElement('section');
 

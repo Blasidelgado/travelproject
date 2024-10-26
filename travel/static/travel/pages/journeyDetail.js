@@ -1,4 +1,3 @@
-import { changeAppState } from "../index.js";
 import getCSRFCookie from "../util/csrfHandler.js";
 import fetchData from "../util/fetchData.js";
 import { parseJourney } from "../util/parseJourneys.js";
