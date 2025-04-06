@@ -1,35 +1,36 @@
 import fetchData from "../util/fetchData.js";
-import getCSRFCookie from "../util/csrfHandler.js";
+import { sendNewJourney } from "../util/sendNewJourney.js";
 
 export default async function newJourneyPage() {
   const container = document.createElement("section");
   container.classList = "container"
 
   container.innerHTML = `
-    <section class="modal fade" id="newTravelModal" tabindex="-1" role="dialog" aria-labelledby="newTravelModalLavel">
+    <section class="modal fade" id="newJourneyModal" tabindex="-1" role="dialog" aria-labelledby="newJourneyModal">
       <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
         <div class="modal-content">
           <div class="modal-header">
-            <h3 class="modal-title" id="newTravelModalLabel">Fill up your next journey information</h3> 
+            <h3 class="modal-title" id="newJourneyModalLabel">Fill up your next journey information</h3> 
             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
               <span aria-hidden="true">&times;</span>
             </button>
           </div>
           <div class="modal-body">
-            <div class="newTravelSteps">
+            <div class="newJourneySteps">
               <ul class="steps">
-                <li class="active"><a href="#step-1">Step 1<br><small>Travel day</small></a></li>
-                <li><a href="#step-2">Step 2<br><small>Travel time</small></a></li>
-                <li><a href="#step-3">Step 3<br><small>Travel origin/destination</small></a></li>
-                <li><a href="#step-4">Step 4<br><small>Seats and price</small></a></li>
-                <li><a href="#step-5">Step 5<br><small>Confirm details</small></a></li>
+                <li class="active">Step 1<br><small>Journey day</small></li>
+                <li>Step 2<br><small>Journey time</small></li>
+                <li>Step 3<br><small>Journey origin/destination</small></li>
+                <li>Step 4<br><small>Seats and price</small></li>
+                <li>Step 5<br><small>Confirm details</small></li>
               </ul>
               <div class="stepsContent">
                 <!-- Step 1 content -->
                 <fieldset id="step-1" class="step">
                   <legend>Journey day</legend>
-                  <label for="travelDay" class="form-label">Select a day:</label>
-                  <input id="travelDay" type="date" class="form-control" aria-describedby="travel-day">
+                  <label for="journeyDay" class="form-label">Select a day:</label>
+                  <input id="journeyDay" type="date" class="form-control" aria-describedby="journey-day">
+                  <p id="journeyDayError" class="error-message" role="alert">Please select a valid journey day</p>
                 </fieldset>
                 <!-- Step 2 content -->
                 <fieldset id="step-2" class="step">
@@ -42,6 +43,10 @@ export default async function newJourneyPage() {
                   <select id="travelMinutes" class="form-control">
                     <option value="" selected disabled hidden>Select the minutes</option>
                   </select>
+                  <small class="text-muted" id="journeyTimeNote" aria-live="polite">
+                    Note: The journey must be scheduled at least 24 hours in advance.
+                  </small>
+                  <p id="journeyTimeError" class="error-message" role="alert">Please select a valid time for the journey</p>
                 </fieldset>
                 <!-- Step 3 content -->
                 <fieldset id="step-3" class="step">
@@ -54,6 +59,7 @@ export default async function newJourneyPage() {
                   <select id="destinationCity" class="select-city form-select form-select-lg mb-3" aria-label="Select city">
                     <option selected hidden disabled>Select city</option>
                   </select>
+                  <p id="journeyCitiesError" class="error-message" role="alert">Please select valid origin and destination cities</p>
                 </fieldset>
                 <!-- Step 4 content -->
                 <fieldset id="step-4" class="step">
@@ -62,9 +68,18 @@ export default async function newJourneyPage() {
                   <input id="availableSeats" type="number" min="0" max="7" class="form-control"/>
                   <label for="seatPrice" class="form-label">Seat price:</label>
                   <input id="seatPrice" type="number" min="0" max="999" class="form-control"/>
+                  <p id="journeySeatsError" class="error-message" role="alert">Please select valid seats count and price</p>
                 </fieldset>
+                <!-- Step 5: Summary content -->
                 <section id="step-5" class="step">
-                  <p>Here a detail of your information will be display.</p>
+                  <h5>Summary</h3>
+                  <div id="summaryContent">
+                    <p><strong>Journey Date and Time:</strong> <span id="summaryJourneyDateTime"></span></p>
+                    <p><strong>Origin City:</strong> <span id="summaryOriginCity"></span></p>
+                    <p><strong>Destination City:</strong> <span id="summaryDestinationCity"></span></p>
+                    <p><strong>Available Seats:</strong> <span id="summaryAvailableSeats"></span></p>
+                    <p><strong>Seat Price:</strong> <span id="summarySeatPrice"></span></p>
+                  </div>
                 </section>
               </div>
               <div class="wizard-buttons">
@@ -78,14 +93,11 @@ export default async function newJourneyPage() {
     </section>
   `
 
-  // Prevent users selecting past days
-  container.querySelector('#travelDay').setAttribute('min', generateTomorrowDate());
-
-  // Populate select with cities
+  // Populate step 3 select with cities
   const response = await fetchData('api/cities');
   if (response.success) {
       const selects = container.querySelectorAll('.select-city');
-
+      
       selects.forEach(select => {
           response.cities.forEach(city => {
               const option = document.createElement('option');
@@ -99,36 +111,38 @@ export default async function newJourneyPage() {
   }
 
   /**
-  * Data management block
+  * Handle user input
   */
   const newJourneyData = {
-    day: null,
-    hours: null,
-    minutes: null,
-    originCity: null,
-    destinationCity: null,
-    availableSeats: null,
-    seatPrice: null
+    date: null,
+    origin: null,
+    destination: null,
+    available_seats: null,
+    seat_price: null
   }
-
-  const journeyDayInput = container.querySelector('#travelDay');
-  const journeyHourInput = container.querySelector('#travelHour');
-  const journeyMinutesInput = container.querySelector('#travelMinutes');
-  const journeyOriginCity = container.querySelector('#originCity');
-  const journeyDestinationCity = container.querySelector('#destinationCity');
-  const journeySeatsInput = container.querySelector('#availableSeats');
-  const journeyPriceInput = container.querySelector('#seatPrice');
-  
+    
   /**
-   * Step 1 logic & validation
+   * Step 1
   */
+  const journeyDayInput = container.querySelector('#journeyDay');
+  const journeyDayError = container.querySelector('#journeyDayError');
+  // Prevent users selecting past days
+  const tomorrow = dateFns.startOfTomorrow();
+  const formattedDate = dateFns.format(tomorrow, 'yyyy-MM-dd');
+  journeyDayInput.setAttribute('min', formattedDate);
+  
   journeyDayInput.addEventListener('change', function() {
-    newJourneyData.day = new Date(`${this.value}T00:00:00`);
+    newJourneyData.date = new Date(`${this.value}T00:00:00`);
+    journeyDayError.style.visibility = 'hidden';
   });
 
   /**
-   * Step 2 logic & validation
+   * Step 2
   */
+  const journeyHourInput = container.querySelector('#travelHour');
+  const journeyMinutesInput = container.querySelector('#travelMinutes');
+  const journeyTimeError = container.querySelector('#journeyTimeError');
+  // Populate hours select
   for (let value = 0; value < 24; value++) {
     const hr = (value % 12) || 12;
     const period = value < 12 ? "AM" : "PM";
@@ -139,7 +153,8 @@ export default async function newJourneyPage() {
   
     journeyHourInput.appendChild(option);
   }
-
+  
+  // Populate minutes select
   for (let value = 0; value < 60; value = value + 10) {
     const option = document.createElement('option');
     option.value = value;
@@ -149,80 +164,77 @@ export default async function newJourneyPage() {
   }
 
   journeyHourInput.addEventListener('change', function() {
-    newJourneyData.hours = this.value;
+    newJourneyData.date = dateFns.setHours(newJourneyData.date, this.value);
+    journeyTimeError.style.visibility = 'hidden';
   })
 
   journeyMinutesInput.addEventListener('change', function() {
-    newJourneyData.minutes = this.value;
+    newJourneyData.date = dateFns.setMinutes(newJourneyData.date, this.value);
+    journeyTimeError.style.visibility = 'hidden';
+  });
+  
+  /**
+   * Step 3
+   */
+  const journeyOriginCity = container.querySelector('#originCity');
+  const journeyDestinationCity = container.querySelector('#destinationCity');
+  const journeyCitiesError = container.querySelector('#journeyCitiesError');
+
+  journeyOriginCity.addEventListener('change', function() {
+    newJourneyData.origin = this.value;
+    journeyCitiesError.style.visibility = 'hidden';
+  });
+  
+  journeyDestinationCity.addEventListener('change', function() {
+    newJourneyData.destination = this.value;
+    journeyCitiesError.style.visibility = 'hidden';
   });
 
   /**
-   * Step 3 logic & validation
+   * Step 4
    */
+  const journeySeatsCountInput = container.querySelector('#availableSeats');
+  const journeySeatPriceInput = container.querySelector('#seatPrice');
+  const journeySeatsError = container.querySelector('#journeySeatsError');
 
-  journeyOriginCity.addEventListener('change', function() {
-    newJourneyData.originCity = this.value;
+  journeySeatsCountInput.addEventListener('change', function() {
+    newJourneyData.available_seats = this.value;
+    journeySeatsError.style.visibility = 'hidden';
+  });
+  
+  journeySeatPriceInput.addEventListener('change', function() {
+    newJourneyData.seat_price = this.value;
+    journeySeatsError.style.visibility = 'hidden';
   });
 
-  journeyDestinationCity.addEventListener('change', function() {
-    newJourneyData.destinationCity = this.value;
-  });
+  /**
+   * Step 5 Confirm details
+   */
+  const summaryJourneyDateTime = container.querySelector('#summaryJourneyDateTime');
+  const summaryOriginCity = container.querySelector('#summaryOriginCity');
+  const summaryDestinationCity = container.querySelector('#summaryDestinationCity');
+  const summaryAvailableSeats = container.querySelector('#summaryAvailableSeats');
+  const summarySeatPrice = container.querySelector('#summarySeatPrice');
 
-    // form.querySelector('#newTravel-form').addEventListener('submit', async e => {
-    //     e.preventDefault();
-                
-    //     // Asegúrate de que las horas y minutos sean válidos
-    //     const hours = parseInt(e.target.querySelector('#travel-hour').value);
-    //     const minutes = parseInt(e.target.querySelector('#travel-minutes').value);
-    
-    //     if (!isNaN(hours) && !isNaN(minutes)) {
-    //         date.setHours(hours);
-    //         date.setMinutes(minutes);
-
-    //         console.log(date);
-    //         } else {
-    //         console.error('Invalid hours or minutes');
-    //         return;
-    //     }
-    //     // Get available seats
-    //     const availableSeats = e.target.querySelector('#available-seats').value;
-    //     const seatPrice = e.target.querySelector('#seat-price').value;
-    //     // Send data to server
-    //     const response = await fetch('/api/travel', {
-    //       method: 'POST',
-    //       headers: {
-    //         "Content-Type": "application/json",
-    //         "X-CSRFToken": getCSRFCookie("csrftoken"),
-    //       },
-    //       body: JSON.stringify({
-    //         date: date,
-    //         origin: originCity,
-    //         destination: destinationCity,
-    //         available_seats: availableSeats,
-    //         seat_price: seatPrice
-    //       }),
-    //     });
-    //     const data = await response.json()
-    //     // Check response
-    //     if (data.success) {
-    //       console.log(data.journey);
-    //     } else {
-    //       console.error('Something went wrong:', data.message)
-    //     }
-    // })
 
   /**
   * Modal and steps functionality
   */
-  const modalElement = container.querySelector("#newTravelModal");
+  const modalElement = container.querySelector("#newJourneyModal");
   modalElement.classList.add('show');
   modalElement.style.display = 'block';
 
-  let currentStep = 0;
+  let currentStep = 0, completedSteps = 0;
   const steps = container.querySelectorAll('.step');
   const stepLinks = container.querySelectorAll('.steps li');
   const prevBtn = container.querySelector('#prevBtn');
   const nextBtn = container.querySelector('#nextBtn');
+  stepLinks.forEach((step, index) => step.onclick = function () {
+    if (completedSteps >= index) {
+      currentStep = index;
+      showStep(currentStep);
+    }
+  });
 
   function showStep(stepIndex) {
     steps.forEach(step => step.classList.remove('active'));
@@ -233,30 +245,109 @@ export default async function newJourneyPage() {
 
     prevBtn.disabled = stepIndex === 0;
     nextBtn.textContent = stepIndex === steps.length - 1 ? 'Finish' : 'Next';
+
+    switch (stepIndex) {
+      case 0: // Step 1: Journey Day
+          if (newJourneyData.date) {
+              journeyDayInput.value = dateFns.format(newJourneyData.date, 'yyyy-MM-dd');
+          }
+          break;
+
+      case 1: // Step 2: Journey Time
+          if (newJourneyData.date) {
+              journeyHourInput.value = dateFns.getHours(newJourneyData.date);
+              journeyMinutesInput.value = dateFns.getMinutes(newJourneyData.date);
+          }
+          break;
+
+      case 2: // Step 3: Origin and Destination
+          if (newJourneyData.origin) {
+              journeyOriginCity.value = newJourneyData.origin;
+          }
+          if (newJourneyData.destination) {
+              journeyDestinationCity.value = newJourneyData.destination;
+          }
+          break;
+
+      case 3: // Step 4: Seats and Price
+          if (newJourneyData.available_seats) {
+              journeySeatsCountInput.value = newJourneyData.available_seats;
+          }
+          if (newJourneyData.seat_price) {
+              journeySeatPriceInput.value = newJourneyData.seat_price;
+          }
+          break;
+
+      case 4: // Step 4: Summary
+          summaryJourneyDateTime.textContent = `${dateFns.format(newJourneyData.date, 'EEE')} ${dateFns.format(newJourneyData.date, 'MM-dd-yyyy')} ${dateFns.format(newJourneyData.date, 'hh:mm a')}`;
+          summaryOriginCity.textContent = newJourneyData.origin;
+          summaryDestinationCity.textContent = newJourneyData.destination;
+          summaryAvailableSeats.textContent = newJourneyData.available_seats;
+          summarySeatPrice.textContent = `$${newJourneyData.seat_price}`;
+          break;
+
+      default:
+          console.error("Unknown step index:", stepIndex);
+          break;
+    }
   }
 
   nextBtn.addEventListener('click', function() {
-    if (currentStep < steps.length - 1) {
-      console.log(currentStep);
-      console.log(newJourneyData);
+    if (currentStep < steps.length) {
       switch(currentStep) {
         case 0:
-          newJourneyData.day && currentStep++;
+          if (newJourneyData.date && newJourneyData.date >= tomorrow) {
+            completedSteps = completedSteps < 0 ? 0 : completedSteps;
+            currentStep = 1;
+          } else {
+            journeyDayError.style.visibility = 'visible';
+            completedSteps = -1;
+          }
           break;
+
         case 1:
-          newJourneyData.hours && newJourneyData.minutes && currentStep++;
+          if (newJourneyData.date && dateFns.differenceInHours(newJourneyData.date, new Date()) > 24) {
+            completedSteps = completedSteps < 1 ? 1 : completedSteps;
+            currentStep = 2;
+          } else {
+            journeyTimeError.style.visibility = 'visible';
+            completedSteps = 0;
+          }
           break;
+
         case 2:
-          newJourneyData.originCity && newJourneyData.destinationCity && newJourneyData.originCity !== newJourneyData.destinationCity && currentStep++;
+          if (newJourneyData.origin && newJourneyData.destination && newJourneyData.origin !== newJourneyData.destination) {
+            completedSteps = completedSteps < 2 ? 2 : completedSteps;
+            currentStep = 3;
+          } else {
+            journeyCitiesError.style.visibility = 'visible';
+            completedSteps = 1;
+          }
           break;
+
+        case 3:
+          if (newJourneyData.available_seats && newJourneyData.seat_price) {
+            console.log(newJourneyData.available_seats, newJourneyData.seat_price);
+            completedSteps = completedSteps < 3 ? 3 : completedSteps;
+            currentStep = 4;
+          } else {
+            journeySeatsError.style.visibility = 'visible';
+            completedSteps = 2;
+          }
+          break;
+
+        case 4: // should be a summary
+          return sendNewJourney(newJourneyData);
+
         default:
           console.log('Something went wrong');
           return;
       }
-    } else {
-        alert('Form submitted!');
-        return;
     }
+
+    console.log('currentStep:', currentStep);
+    console.log('completedsteps:', completedSteps);
+    console.log(newJourneyData);
     showStep(currentStep);
   });
 
@@ -267,19 +358,8 @@ export default async function newJourneyPage() {
     showStep(currentStep);
   });
 
+  console.log(currentStep);
   showStep(currentStep);
 
   return container;
-}
-
-
-function generateTomorrowDate() {
-  const tomorrow = new Date();
-  tomorrow.setDate(tomorrow.getDate() + 1);
-
-  const year = tomorrow.getFullYear();
-  const month = (tomorrow.getMonth() + 1).toString().padStart(2, '0');
-  const day = tomorrow.getDate().toString().padStart(2, '0');
-
-  return `${year}-${month}-${day}`;
 }

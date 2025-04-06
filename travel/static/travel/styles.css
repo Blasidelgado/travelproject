@@ -258,11 +258,20 @@ div.item {
 }
 
 /* New Journey Steps */
-.newTravelSteps {
+#newJourneyModal {
+    position: relative;
+    top: 50%;
+    margin: 0 auto;
+    width: 70%;
+    height: 50%;
+}
+
+.newJourneySteps {
     max-width: 600px;
     margin: 0 auto;
     text-align: center;
 }
+
 .steps {
     list-style: none;
     padding: 0;
@@ -282,6 +291,24 @@ div.item {
 .stepsContent .step.active {
     display: block;
 }
+
+.error-message {
+    visibility: hidden;
+    color: red;
+    font-size: 0.875em;
+    margin-top: 0.5em;
+}
+
 .wizard-buttons {
     margin-top: 20px;
+}
+
+#summaryContent {
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+}
+
+#summaryContent > p {
+    margin-left: 20%;
 }
