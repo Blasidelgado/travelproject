@@ -1,4 +1,4 @@
-import checkSessionStatus from "./util/handleSession.js";
+import checkSessionStatus from "./utils/handleSession.js";
 import homePage from "./pages/home.js";
 import loginPage from "./pages/auth/login.js";
 import registerPage from "./pages/auth/register.js";

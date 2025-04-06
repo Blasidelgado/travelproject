@@ -1,4 +1,4 @@
-import getCSRFCookie from "../../util/csrfHandler.js";
+import getCSRFCookie from "../../utils/csrfHandler.js";
 
 export default async function loginPage(navigateTo) {
 

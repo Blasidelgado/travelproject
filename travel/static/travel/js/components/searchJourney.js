@@ -1,5 +1,5 @@
-import fetchData from "../util/fetchData.js";
-import { parseJourneys } from "../util/parseJourneys.js";
+import fetchData from "../utils/fetchData.js";
+import { parseJourneys } from "../utils/parseJourneys.js";
 import pageButtons from "./pageButtons.js";
 
 /**

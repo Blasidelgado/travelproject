@@ -1,6 +1,6 @@
-import getCSRFCookie from "../util/csrfHandler.js";
-import fetchData from "../util/fetchData.js";
-import { parseJourney } from "../util/parseJourneys.js";
+import getCSRFCookie from "../utils/csrfHandler.js";
+import fetchData from "../utils/fetchData.js";
+import { parseJourney } from "../utils/parseJourneys.js";
 
 export default async function journeyDetail(journey_id, navigateTo) {
   console.log(journeyDetail);

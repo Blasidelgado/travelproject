@@ -1,7 +1,7 @@
-import fetchData from "../util/fetchData.js";
-import { parseJourneys } from "../util/parseJourneys.js";
+import fetchData from "../utils/fetchData.js";
+import { parseJourneys } from "../utils/parseJourneys.js";
 import pageButtons from "../components/pageButtons.js";
-import checkSessionStatus from "../util/handleSession.js";
+import checkSessionStatus from "../utils/handleSession.js";
 
 export default async function allJourneys(navigateTo, page=1) {
     const container = document.createElement('section');

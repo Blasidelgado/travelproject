@@ -1,4 +1,4 @@
-import fetchData from "../util/fetchData.js";
+import fetchData from "../utils/fetchData.js";
 
 export default async function travelPage(navigateTo) {
     const container = document.createElement("section");

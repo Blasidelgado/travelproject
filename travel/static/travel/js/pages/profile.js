@@ -1,6 +1,6 @@
-import getCSRFCookie from "../util/csrfHandler.js";
-import fetchData from "../util/fetchData.js";
-import checkSessionStatus from "../util/handleSession.js";
+import getCSRFCookie from "../utils/csrfHandler.js";
+import fetchData from "../utils/fetchData.js";
+import checkSessionStatus from "../utils/handleSession.js";
 
 export default async function profilePage(navigateTo, user) {
 

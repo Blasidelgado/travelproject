@@ -1,4 +1,4 @@
-import fetchData from "../util/fetchData.js";
+import fetchData from "../utils/fetchData.js";
 import { parseJourneys } from "./journeyDetail.js";
 import pageButtons from "../components/pageButtons.js";
 
