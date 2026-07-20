@@ -199,6 +199,15 @@ div.item {
     }
 }
 
+/* Error message styling */
+.error-message {
+    visibility: hidden; /* Default state: hidden but occupies space */
+    color: red;
+    font-size: 0.875em;
+    margin-top: 0.5em;
+    min-height: 1.2rem; /* Ensure consistent height for the error message */
+}
+
 /* /travel page */
 
 .page-container {
@@ -258,38 +267,17 @@ div.item {
 }
 
 /* New Journey Steps */
-#newJourneyModal {
-    position: relative;
-    top: 50%;
-    margin: 0 auto;
-    width: 70%;
-    height: 50%;
-}
-
-.newJourneySteps {
-    max-width: 600px;
-    margin: 0 auto;
-    text-align: center;
-}
-
-.steps {
-    list-style: none;
-    padding: 0;
+.journey-tab-container {
     display: flex;
-    justify-content: space-between;
-    margin-bottom: 20px;
+    justify-content: space-around;
 }
-.steps li {
-    width: 24%;
-}
-.steps li.active a {
-    font-weight: bold;
-}
-.stepsContent .step {
-    display: none;
-}
-.stepsContent .step.active {
-    display: block;
+
+.journey-tab-container > div {
+    border: 1px solid #788BFF;
+    text-align: center;
+    padding: 0.5rem;
+    background-color: #788BFF;
+    border-radius: 10px;
 }
 
 .error-message {

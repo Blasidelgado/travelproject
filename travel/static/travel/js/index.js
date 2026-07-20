@@ -134,7 +134,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 body.appendChild(await searchJourney());
                 break;
             case '/new-journey':
-                body.appendChild(await newJourneyPage());
+                body.appendChild(newJourneyPage());
                 break;
             case '/journeys':
                 body.appendChild(await allJourneys(navigateTo, payload));
