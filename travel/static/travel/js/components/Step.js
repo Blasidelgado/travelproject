@@ -14,11 +14,9 @@ export default class Step {
     if (this.index === 0) {
       // Step 1: Journey Day - Set minimum date and placeholder
       const dateInput = this.stepElement.querySelector('#journeyDay');
-      const today = new Date();
-      const minDate = new Date(today.setDate(today.getDate() + 2)) // Current day + 2
-        .toISOString()
-        .split('T')[0]; // Format as YYYY-MM-DD
-      dateInput.min = minDate; // Disable dates before the day after tomorrow
+
+      const minDate = Validation.getMinJourneyDate(); // Get the minimum journey date (1 day in advance)
+      dateInput.min = minDate;
       dateInput.placeholder = 'mm/dd/yyyy'; // Show placeholder instead of default value
       dateInput.value = ''; // Ensure no default value is selected
     }
