@@ -225,7 +225,7 @@ def create_journey(request):
 
     journey_date = data["date"]
     # Check if date is at least the current day + 1
-    if datetime.strptime(journey_date, '%Y-%m-%dT%H:%M:%S.%fZ') < (datetime.now() + timedelta(days=1)):
+    if datetime.strptime(journey_date, '%Y-%m-%dT%H:%M:%S') < (timezone.now() + timedelta(days=1)):
         return JsonResponse({'success': False, 'message': 'Invalid date'}, status=400)
     driver = UserProfile.objects.get(user=request.user)
     origin = City.objects.get(city_name=data["origin"])
@@ -249,8 +249,8 @@ def create_journey(request):
     # Inform client the validation error
     except ValidationError as e:
         return JsonResponse({'success': False, 'message': dict(e)}, status=400)            
-    except:
-        JsonResponse({'success': False, 'message': 'Could not create journey.'}, status=500)
+    except Exception:
+        return JsonResponse({'success': False, 'message': 'Could not create journey.'}, status=500)
 
 
 @login_required(login_url="/")

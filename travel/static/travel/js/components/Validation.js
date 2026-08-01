@@ -14,26 +14,26 @@ export default class Validation {
     return { valid: true };
   }
 
-  static validateTime(hour, minutes, date) {
-    if (!hour || !minutes || !date) {
+  static validateTime(hourLabel, minutes, date) {
+    if (!hourLabel || !minutes || !date) {
       return { valid: false, message: "Please select a valid time for the journey." };
     }
-    const dt = new Date(date);
-    const [hourValue, period] = hour.split(" ");
-    const hourInt = parseInt(hourValue, 10);
+
+    const [rawHour, period] = hourLabel.split(" ");
+    const hourInt = parseInt(rawHour, 10);
+    let hour24Int;
     if (period === "PM" && hourInt < 12) {
-      dt.setHours(hourInt + 12);
+      hour24Int = hourInt + 12;
     } else if (period === "AM" && hourInt === 12) {
-      dt.setHours(0);
+      hour24Int = 0;
     } else {
-      dt.setHours(hourInt);
-    }
-    dt.setMinutes(parseInt(minutes, 10));
-    if (isNaN(dt.getTime())) {
-      return { valid: false, message: "Invalid time format." };
+      hour24Int = hourInt;
     }
 
-    return { valid: true, date: dt };
+    const hour24 = hour24Int.toString().padStart(2, '0');
+
+    // Return the combined date and time in ISO format for further processing, without timezone conversion
+    return { valid: true, date: `${date}T${hour24}:${minutes}:00` };
   }
 
   static validateCities(origin, destination) {

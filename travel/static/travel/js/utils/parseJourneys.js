@@ -51,17 +51,13 @@ export function parseJourneys(journeys, navigateTo) {
 
 /**
  * 
- * @param {*} unformattedDate 
- * @returns {string} Formatted date
+ * @param {*} unformattedDate YYYY-MM-DDTHH:MM:SS
+ * @returns {string} DD/MM/YYYY HH:MM
  */
 export function parseDate(unformattedDate) {
-    const date = new Date(unformattedDate);
-
-    const year = date.getFullYear();
-    const month = ("0" + (date.getMonth() + 1)).slice(-2);
-    const day = ("0" + date.getDate()).slice(-2);
-    const hour = ("0" + date.getHours()).slice(-2);
-    const minutes = ("0" + date.getMinutes()).slice(-2);
+    const [date, time] = unformattedDate.split('T');
+    const [year, month, day] = date.split('-');
+    const [hour, minutes] = time.split(':');
 
     const formattedDate = `${day}/${month}/${year} ${hour}:${minutes}`;
 
